@@ -173,6 +173,7 @@ persist_tun
 ping_timer_rem
 pull
 push_reset
+push_peer_info
 remote_random
 rmtun
 route_noexec
