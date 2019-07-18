@@ -278,6 +278,12 @@ define LegacyDevice/WNR2200
 endef
 LEGACY_DEVICES += WNR2200
 
+define LegacyDevice/WNR2200_16M
+  DEVICE_TITLE := NETGEAR WNR2200 (16MB flash)
+  DEVICE_PACKAGES := kmod-usb-core kmod-usb2 kmod-usb-ledtrig-usbport
+endef
+LEGACY_DEVICES += WNR2200_16M
+
 define LegacyDevice/OM2P
   DEVICE_TITLE := OpenMesh OM2P/OM2P-HS/OM2P-LC
   DEVICE_PACKAGES := om-watchdog
