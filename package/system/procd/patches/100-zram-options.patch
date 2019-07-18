@@ -1,0 +1,23 @@
+diff --git a/initd/zram.c b/initd/zram.c
+index b41bfd9..677b376 100644
+--- a/initd/zram.c
++++ b/initd/zram.c
+@@ -82,7 +82,8 @@ early_insmod(char *module)
+ int
+ mount_zram_on_tmp(void)
+ {
+-	char *mkfs[] = { "/usr/sbin/mkfs.ext4", "-b", "4096", "-F", "-L", "TEMP", "-m", "0", "/dev/zram0", NULL };
++	LOG("Preparing customized zram on /tmp mount\n");
++	char *mkfs[] = { "/usr/sbin/mkfs.ext4", "-q", "-b", "4096", "-F", "-L", "TEMP", "-m", "0", "-I", "128", "-O", "^has_journal,^dir_index,^large_file,^huge_file,^resize_inode,sparse_super2,^ext_attr,^dir_nlink,^extra_isize,uninit_bg", "-E", "discard,packed_meta_blocks=1,lazy_itable_init=1,num_backup_sb=0", "/dev/zram0", NULL };
+ 	FILE *fp;
+ 	long zramsize;
+ 	pid_t pid;
+@@ -116,7 +117,7 @@ mount_zram_on_tmp(void)
+ 		waitpid(pid, NULL, 0);
+ 	}
+ 
+-	ret = mount("/dev/zram0", "/tmp", "ext4", MS_NOSUID | MS_NODEV | MS_NOATIME, "errors=continue,noquota");
++	ret = mount("/dev/zram0", "/tmp", "ext4", MS_NOSUID | MS_NODEV | MS_NOATIME, "errors=continue,nobarrier,discard,delalloc,noauto_da_alloc,dioread_nolock");
+ 	if (ret < 0) {
+ 		ERROR("Can't mount /dev/zram0 on /tmp: %m\n");
+ 		return errno;
