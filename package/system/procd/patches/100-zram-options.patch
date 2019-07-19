@@ -1,8 +1,7 @@
-diff --git a/initd/zram.c b/initd/zram.c
-index b41bfd9..677b376 100644
---- a/initd/zram.c
-+++ b/initd/zram.c
-@@ -82,7 +82,8 @@ early_insmod(char *module)
+diff -uprN procd-2019-05-30-ade00ca5.old/initd/zram.c procd-2019-05-30-ade00ca5/initd/zram.c
+--- procd-2019-05-30-ade00ca5.old/initd/zram.c	2019-05-30 08:53:26.000000000 +0300
++++ procd-2019-05-30-ade00ca5/initd/zram.c	2019-07-19 15:32:47.479441678 +0300
+@@ -83,7 +83,8 @@ early_insmod(char *module)
  int
  mount_zram_on_tmp(void)
  {
@@ -12,12 +11,12 @@ index b41bfd9..677b376 100644
  	FILE *fp;
  	long zramsize;
  	pid_t pid;
-@@ -116,7 +117,7 @@ mount_zram_on_tmp(void)
- 		waitpid(pid, NULL, 0);
+@@ -118,7 +119,7 @@ mount_zram_on_tmp(void)
  	}
  
--	ret = mount("/dev/zram0", "/tmp", "ext4", MS_NOSUID | MS_NODEV | MS_NOATIME, "errors=continue,noquota");
-+	ret = mount("/dev/zram0", "/tmp", "ext4", MS_NOSUID | MS_NODEV | MS_NOATIME, "errors=continue,nobarrier,discard,delalloc,noauto_da_alloc,dioread_nolock");
- 	if (ret < 0) {
- 		ERROR("Can't mount /dev/zram0 on /tmp: %m\n");
- 		return errno;
+ 	if (!is_container()) {
+-		ret = mount("/dev/zram0", "/tmp", "ext4", MS_NOSUID | MS_NODEV | MS_NOATIME, "errors=continue,noquota");
++		ret = mount("/dev/zram0", "/tmp", "ext4", MS_NOSUID | MS_NODEV | MS_NOATIME, "errors=continue,nobarrier,discard,delalloc,noauto_da_alloc,dioread_nolock");
+ 		if (ret < 0) {
+ 			ERROR("Can't mount /dev/zram0 on /tmp: %m\n");
+ 			return errno;
