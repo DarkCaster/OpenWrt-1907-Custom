@@ -3,9 +3,9 @@ os: linux
 distro: bionic
 env:
   global:
-    - scripts_repo="https://github.com/DarkCaster/OpenWrt-Helper-Scripts"
-    - configs_repo="https://github.com/DarkCaster/OpenWrt-Buildconfigs.git"
-    - openwrt_version="OpenWrt-1907-custom"
+    - _scripts_repo="https://github.com/DarkCaster/OpenWrt-Helper-Scripts"
+    - _configs_repo="https://github.com/DarkCaster/OpenWrt-Buildconfigs.git"
+    - _openwrt_version="OpenWrt-1907-custom"
   matrix:
-    - build_name="netgear-wnr2000+tplink-wr842nd"
-script: ./build.sh "$scripts_repo" "$configs_repo" "$openwrt_version" "$build_name"
+    - _build_name="netgear-wnr2000+tplink-wr842nd"
+script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name"

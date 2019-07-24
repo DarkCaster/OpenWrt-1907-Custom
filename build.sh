@@ -26,6 +26,7 @@ cd "$script_dir"
 
 #cleanup
 rm -rfv "external"
+mkdir -pv "external"
 
 #init helper repos
 pushd "external"
