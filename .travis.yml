@@ -1,5 +1,10 @@
 language: c
+os: linux
+  dist: bionic
+env:
+- scripts_repo="https://github.com/DarkCaster/OpenWrt-Helper-Scripts"
+- configs_repo="https://github.com/DarkCaster/OpenWrt-Buildconfigs.git" 
+- openwrt_version="OpenWrt-1907-custom"
 matrix:
   include:
-  - os: linux
-    dist: bionic
+  - script: ./travis-build.sh "$scripts_repo" "$configs_repo" "$openwrt_version" "$netgear-wnr2000+tplink-wr842nd"
