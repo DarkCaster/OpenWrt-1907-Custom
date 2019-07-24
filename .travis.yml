@@ -7,4 +7,5 @@ env:
   - openwrt_version="OpenWrt-1907-custom"
 matrix:
   include:
-    - script: ./travis-build.sh "$scripts_repo" "$configs_repo" "$openwrt_version" "$netgear-wnr2000+tplink-wr842nd"
+    - env: build_name="netgear-wnr2000+tplink-wr842nd"
+script: ./build.sh "$scripts_repo" "$configs_repo" "$openwrt_version" "$build_name"
