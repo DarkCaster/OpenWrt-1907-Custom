@@ -1,6 +1,8 @@
 language: c
 os: linux
 dist: bionic
+git:
+  depth: false
 env:
   global:
     - _scripts_repo="https://github.com/DarkCaster/OpenWrt-Helper-Scripts"
