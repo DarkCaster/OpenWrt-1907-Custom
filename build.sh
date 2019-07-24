@@ -59,8 +59,7 @@ while read script; do
 done < <(find "external/scripts/Build/$openwrt_version" -type f | sort)
 
 config_file="configs/$openwrt_version/$build_name.diffconfig"
-echo "installing config from $config_file"
-
+echo "applying config from $config_file"
 cp "$config_file" .config
 make defconfig
 echo
