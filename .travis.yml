@@ -10,4 +10,6 @@ env:
     - _openwrt_version="OpenWrt-1907-custom"
   matrix:
     - _build_name="netgear-wnr2000+tplink-wr842nd"
-script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name"
+    - _operation="download"
+    - _operation="host_tools"
+script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" "$_operation"

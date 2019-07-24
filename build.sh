@@ -8,9 +8,16 @@ scripts_repo="$1"
 configs_repo="$2"
 openwrt_version="$3"
 build_name="$4"
+operation="$5"
+
+if [[ ! -z $operation ]]; then
+  shift 5
+else
+  shift 4
+fi
 
 if [[ -z $scripts_repo || -z $configs_repo || -z $openwrt_version || -z $build_name ]]; then
-  echo "usage: build.sh <scripts_repo> <configs_repo> <openwrt_version> <build_name>"
+  echo "usage: build.sh <scripts_repo> <configs_repo> <openwrt_version> <build_name> [operation]"
   echo "see invocation examples at .travis.yml"
   exit 2
 fi
@@ -20,6 +27,7 @@ echo "scripts_repo: $scripts_repo"
 echo "configs_repo: $configs_repo"
 echo "openwrt_version: $openwrt_version"
 echo "build_name: $build_name"
+echo "operation: $operation"
 echo
 
 #chdir
@@ -66,7 +74,10 @@ echo "ensuring diffconfig is unchanged"
 diff "test.diffconfig" "$config_file" 1>/dev/null
 rm -v "test.diffconfig"
 
-echo "building openwrt (`nproc` jobs)"
-make world -j$(nproc)
+jobs_count=`nproc`
+(( jobs_count *= 2 ))
+
+echo "building openwrt ($jobs_count jobs)"
+make world -j$jobs_count
 
 exit 1
