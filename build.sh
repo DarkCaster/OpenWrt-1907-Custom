@@ -55,15 +55,18 @@ echo "running build preparation scripts:"
 while read script; do
   echo "running $script"
   "$script"
-  echo
 done < <(find "external/scripts/Build/$openwrt_version" -type f | sort)
 
-config_file="configs/$openwrt_version/$build_name.diffconfig"
-echo "applying config from $config_file"
+config_file="external/configs/$openwrt_version/$build_name.diffconfig"
+echo "installing config from $config_file"
 cp "$config_file" .config
 make defconfig
-echo
+./scripts/diffconfig.sh > test.diffconfig
+echo "ensuring diffconfig is unchanged"
+diff "test.diffconfig" "$config_file" 1>/dev/null
+rm -v "test.diffconfig"
 
 echo "building openwrt"
+make world -j1
 
 exit 1
