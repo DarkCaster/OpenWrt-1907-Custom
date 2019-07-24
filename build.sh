@@ -20,18 +20,35 @@ echo "scripts_repo: $scripts_repo"
 echo "configs_repo: $configs_repo"
 echo "openwrt_version: $openwrt_version"
 echo "build_name: $build_name"
+echo
 
 #chdir
 cd "$script_dir"
 
-#cleanup
+#remove dir with extra stuff needed for build
 rm -rfv "external"
 mkdir -pv "external"
 
 #init helper repos
-pushd "external"
-git clone $scripts_repo scripts
-git clone $scripts_repo configs
-popd
+pushd "external" 1>/dev/null
+echo "installing build scripts"
+git clone --depth 1 "$scripts_repo" scripts
+echo
+echo "installing build configs"
+git clone --depth 1 "$configs_repo" configs
+echo
+popd 1>/dev/null
+
+echo "env before cleanup:"
+export
+echo
+
+echo "cleaning up build env"
+. "external/scripts/Build/clean-env.sh.in"
+
+echo "env after cleanup:"
+export
+echo
+
 
 exit 1
