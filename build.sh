@@ -66,7 +66,7 @@ echo "ensuring diffconfig is unchanged"
 diff "test.diffconfig" "$config_file" 1>/dev/null
 rm -v "test.diffconfig"
 
-echo "building openwrt"
-make world -j1
+echo "building openwrt (`nproc` jobs)"
+make world -j$(nproc)
 
 exit 1
