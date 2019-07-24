@@ -50,5 +50,10 @@ echo "env after cleanup:"
 export
 echo
 
+echo "running build preparation scripts:"
+while read script; do
+  echo "running $script"
+  "$script"
+done < <(find "external/scripts/Build/$openwrt_version" -type f | sort)
 
 exit 1
