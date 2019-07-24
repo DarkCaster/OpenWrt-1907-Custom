@@ -1,0 +1,4 @@
+os: linux
+  dist: bionic
+compiler: gcc
+language: c
