@@ -78,15 +78,16 @@ fi
 
 echo "using cache directory at $cache_dir"
 
-cache_stage="$cache_dir/stage_${TRAVIS_BUILD_ID}_${openwrt_version}_${build_name}_${commit_hash}"
-cache_status="$cache_dir/status_${TRAVIS_BUILD_ID}_${openwrt_version}_${build_name}_${commit_hash}"
+build_hash=`echo "${TRAVIS_BUILD_ID}${openwrt_version}${build_name}${commit_hash}" | sha256sum -t - | cut -f1 -d' '`
+cache_stage="$cache_dir/stage_${build_hash}"
+cache_status="$cache_dir/status_${build_hash}"
+temp_dir=`mktemp -d -t XXXXXX`
 
 mkdir -pv "$cache_stage"
 mkdir -pv "$cache_status"
 
 clean_cache() {
   echo "cleaning stage-cache files"
-  rm -rf "$cache_stage"/*/*
   while read file; do
     echo "trimming $file"
     rm "$file"
@@ -152,14 +153,14 @@ create_pack() {
   local pack_tar="$operation.tar"
   local pack_z="$operation.tar.xz"
   echo "creating pack: $cache_stage/$pack_z"
-  rm -rf "$cache_stage/$operation"
   rm -f "$cache_stage/$pack_tar"
   rm -f "$cache_stage/$pack_z"
-  mkdir "$cache_stage/$operation"
-  rsync --exclude="/.git" --exclude="/build.sh" -vcrlHpEogDtW --numeric-ids --delete-before --quiet "$script_dir"/ "$cache_stage/$operation"/
-  pushd "$cache_stage" 1>/dev/null
+  mkdir -p "$temp_dir/$operation"
+  rsync --exclude="/.git" --exclude="/build.sh" -vrlHpEogDtW --numeric-ids --delete-before --quiet "$script_dir"/ "$temp_dir/$operation"/
+  pushd "$temp_dir" 1>/dev/null
   tar cf "$pack_tar" "$operation"
-  xz --threads=$jobs_count -v -2 "$pack_tar"
+  xz --threads=$jobs_count -2 "$pack_tar"
+  mv "$pack_z" "$cache_stage/$pack_z"
   popd 1>/dev/null
   rm -rf "$cache_stage/$operation"
   echo "creating stage-completion mark $cache_status/$operation"
@@ -179,13 +180,12 @@ restore_pack() {
     return 1
   fi
   echo "restoring pack: $cache_stage/$pack_z"
-  rm -rf "$cache_stage/$operation"
-  pushd "$cache_stage" 1>/dev/null
+  pushd "$temp_dir" 1>/dev/null
   xz -c -d "$cache_stage/$pack_z" | tar xf -
-  rsync --exclude="/.git" --exclude="/build.sh" -vrlHpEogDtW --numeric-ids --delete-before --quiet "$cache_stage/$operation"/ "$script_dir"/
+  rsync --exclude="/.git" --exclude="/build.sh" -vcrlHpEogDtW --numeric-ids --delete-before --quiet "$temp_dir/$operation"/ "$script_dir"/
   popd 1>/dev/null
   echo "cleaning up"
-  rm -rf "$cache_stage/$operation"
+  rm -rf "$temp_dir/$operation"
   echo "trimming $cache_stage/$pack_z"
   rm "$cache_stage/$pack_z"
   touch "$cache_stage/$pack_z"
