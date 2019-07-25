@@ -1,10 +1,13 @@
 #!/bin/bash
 
+set -eE
+
 ping_pid=""
 
 run_ping() {
   echo "starting build timer"
   (
+    set +eE
     trap - ERR
     timer="0"
     while true; do
@@ -56,8 +59,6 @@ echo "build_name: $build_name"
 echo "operation: $operation"
 echo "jobs count: $jobs_count"
 echo
-
-
 
 pushd "$script_dir" 1>/dev/null
 commit_hash=`git rev-parse HEAD`
