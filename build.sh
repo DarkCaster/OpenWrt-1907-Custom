@@ -150,7 +150,7 @@ full_init() {
 }
 
 create_pack() {
-  local pack_z="$operation.tar.xz"
+  local pack_z="$operation.tar.pigz"
   echo "creating pack: $cache_stage/$pack_z"
   rm -f "$cache_stage/$pack_z"
   mkdir -p "$temp_dir/$operation"
@@ -158,7 +158,7 @@ create_pack() {
   rsync --exclude="/.git" --exclude="/build.sh" -vrlHpEogDtW --numeric-ids --delete-before --quiet "$script_dir"/ "$temp_dir/$operation"/
   pushd "$temp_dir" 1>/dev/null
   echo "creating archive"
-  tar cf - "$operation" | xz -z --threads=$jobs_count -2 - > "$pack_z"
+  tar cf - "$operation" | pigz -3 - > "$pack_z"
   mv "$pack_z" "$cache_stage/$pack_z"
   popd 1>/dev/null
   rm -rf "$cache_stage/$operation"
@@ -168,7 +168,7 @@ create_pack() {
 
 restore_pack() {
   local operation="$1"
-  local pack_z="$operation.tar.xz"
+  local pack_z="$operation.tar.pigz"
   echo "checking stage-completion mark $cache_status/$operation"
   if [[ ! -f "$cache_status/$operation" ]]; then
     echo "no stage-completion mark found at $cache_status/$operation"
@@ -181,7 +181,7 @@ restore_pack() {
   echo "restoring pack: $cache_stage/$pack_z"
   pushd "$temp_dir" 1>/dev/null
   echo "extracting archive"
-  xz -c -d "$cache_stage/$pack_z" | tar xf -
+  pigz -c -d "$cache_stage/$pack_z" | tar xf -
   echo "copying files"
   rsync --exclude="/.git" --exclude="/build.sh" -vcrlHpEogDtW --numeric-ids --delete-before --quiet "$temp_dir/$operation"/ "$script_dir"/
   popd 1>/dev/null

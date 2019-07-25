@@ -1,6 +1,10 @@
 language: c
 os: linux
 dist: bionic
+addons:
+  apt:
+    packages:
+    - pigz
 cache:
   directories:
     - /home/travis/.cache/openwrt
