@@ -172,6 +172,13 @@ elif [[ $operation = "download" ]]; then
   make download -j$jobs_count
   create_pack
   mark_stage_completion
+elif [[ $operation = "toolchain" ]]; then
+  check_stage_completion "download"
+  restore_pack "download"
+  clean_env
+  make toolchain/install -j$jobs_count
+  create_pack
+  mark_stage_completion
 else
   echo "operation $operation is not supported"
   clean_cache
