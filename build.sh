@@ -73,7 +73,7 @@ clean_cache() {
     echo "trimming $file"
     rm "$file"
     touch "$file"
-  done < <(find "$cache_stage" -type f | sort)
+  done < <(find "$cache_stage" -type f)
 }
 
 full_init() {
