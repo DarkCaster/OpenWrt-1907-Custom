@@ -152,7 +152,6 @@ full_init() {
 create_pack() {
   local pack_z="$operation.tar.xz"
   echo "creating pack: $cache_stage/$pack_z"
-  rm -f "$cache_stage/$pack_tar"
   rm -f "$cache_stage/$pack_z"
   mkdir -p "$temp_dir/$operation"
   echo "copying files"
