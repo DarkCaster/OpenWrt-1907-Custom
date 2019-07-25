@@ -52,9 +52,9 @@ fi
 
 echo "using cache directory at $cache_dir"
 
-cache_dl="$cache_dir/downloads_$openwrt_version_$build_name_$commit_hash"
-cache_stage="$cache_dir/stage_$openwrt_version_$build_name_$commit_hash"
-cache_status="$cache_dir/status_$openwrt_version_$build_name_$commit_hash"
+cache_dl="$cache_dir/downloads_${TRAVIS_BUILD_ID}_${openwrt_version}_${build_name}_${commit_hash}"
+cache_stage="$cache_dir/stage_${TRAVIS_BUILD_ID}_${openwrt_version}_${build_name}_${commit_hash}"
+cache_status="$cache_dir/status_${TRAVIS_BUILD_ID}_${openwrt_version}_${build_name}_${commit_hash}"
 
 mkdir -pv "$cache_dir"
 mkdir -pv "$cache_dl"
