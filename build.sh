@@ -75,16 +75,16 @@ clean_env() {
 
 clean_cache() {
   #clean cache
-  rm -rfv "$cache_dl"/*
-  rm -rfv "$cache_stage"/*
-  rm -rfv "$cache_status"/*
+  rm -rf "$cache_dl"/*
+  rm -rf "$cache_stage"/*
+  rm -rf "$cache_status"/*
 }
 
 full_init() {
   clean_cache
 
   #remove dir with extra stuff needed for build
-  rm -rfv "$script_dir/external"
+  rm -rf "$script_dir/external"
   mkdir -pv "$script_dir/external"
 
   pushd "$script_dir" 1>/dev/null
@@ -126,16 +126,16 @@ create_pack() {
   local pack_tar="$operation.tar"
   local pack_z="$operation.tar.xz"
   echo "creating pack: $cache_stage/$pack_z"
-  rm -rfv "$cache_stage/$operation"
-  rm -fv "$cache_stage/$pack_tar"
-  rm -fv "$cache_stage/$pack_z"
+  rm -rf "$cache_stage/$operation"
+  rm -f "$cache_stage/$pack_tar"
+  rm -f "$cache_stage/$pack_z"
   mkdir "$cache_stage/$operation"
-  rsync --exclude="/.git" --exclude="/build.sh" -vcrlHpEogDtW --numeric-ids --delete-before "$script_dir"/ "$cache_stage/$operation"/
+  rsync --exclude="/.git" --exclude="/build.sh" -vcrlHpEogDtW --numeric-ids --delete-before --quiet "$script_dir"/ "$cache_stage/$operation"/
   pushd "$cache_stage" 1>/dev/null
   tar cvf "$pack_tar" "$operation"
   xz -3e "$pack_tar"
   popd 1>/dev/null
-  rm -rfv "$cache_stage/$operation"
+  rm -rf "$cache_stage/$operation"
   echo "current stage dir contents: $cache_stage"
   ls -la "$cache_stage"
 }
@@ -146,14 +146,14 @@ restore_pack() {
   echo "current stage dir contents: $cache_stage"
   ls -la "$cache_stage"
   echo "restoring pack: $cache_stage/$pack_z"
-  rm -rfv "$cache_stage/$operation"
+  rm -rf "$cache_stage/$operation"
   pushd "$cache_stage" 1>/dev/null
   xz -c -d "$cache_stage/$pack_z" | tar xvf -
-  rsync --exclude="/.git" --exclude="/build.sh" -vcrlHpEogDtW --numeric-ids --delete-before "$cache_stage/$operation"/ "$script_dir"/
+  rsync --exclude="/.git" --exclude="/build.sh" -vcrlHpEogDtW --numeric-ids --delete-before --quiet "$cache_stage/$operation"/ "$script_dir"/
   popd 1>/dev/null
   echo "cleaning up"
-  rm -rfv "$cache_stage/$operation"
-  rm -fv "$cache_stage/$pack_z"
+  rm -rf "$cache_stage/$operation"
+  rm -f "$cache_stage/$pack_z"
 }
 
 if [[ $operation = "init" ]]; then
