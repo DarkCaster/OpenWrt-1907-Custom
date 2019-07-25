@@ -1,6 +1,33 @@
 #!/bin/bash
 
-set -e
+set -eE
+
+ping_pid=""
+
+run_ping() {
+  echo "starting build timer"
+  (
+    set +eE
+    trap - ERR
+    timer="0"
+    while true; do
+      sleep 60
+      (( timer += 1 ))
+      echo "building: $timer min"
+    done
+  ) &
+  ping_pid="$!"
+}
+
+stop_ping() {
+  if [[ ! -z $ping_pid ]]; then
+    2>/dev/null kill -SIGTERM $ping_pid || true
+    2>/dev/null wait $ping_pid || true
+    ping_pid=""
+  fi
+}
+
+trap stop_ping ERR
 
 script_dir="$( cd "$( dirname "$0" )" && pwd )"
 
@@ -164,25 +191,7 @@ restore_pack() {
   touch "$cache_stage/$pack_z"
 }
 
-ping_pid=""
-
-run_ping() {
-  echo "starting ping-task"
-  (
-    set +e
-    while true; do
-      sleep 60
-      echo "...building..."
-    done
-  ) &
-  ping_pid="$!"
-}
-
-stop_ping() {
-  if [[ ! -z $ping_pid ]]; then
-    kill -SIGTERM $ping_pid || true
-  fi
-}
+# handle build stages
 
 if [[ $operation = "prepare" ]]; then
   full_init
@@ -223,14 +232,3 @@ else
   clean_cache
   exit 1
 fi
-
-
-
-
-
-
-
-
-
-#echo "building openwrt ($jobs_count jobs)"
-#make world -j$jobs_count V=s
