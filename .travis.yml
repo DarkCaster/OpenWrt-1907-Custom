@@ -1,6 +1,9 @@
 language: c
 os: linux
 dist: bionic
+cache:
+  directories:
+    - /home/travis/.cache/openwrt
 git:
   depth: false
 env:
@@ -8,9 +11,11 @@ env:
     - _scripts_repo="https://github.com/DarkCaster/OpenWrt-Helper-Scripts"
     - _configs_repo="https://github.com/DarkCaster/OpenWrt-Buildconfigs.git"
     - _openwrt_version="OpenWrt-1907-custom"
+    - OPENWRT_BUILD_CACHE_DIR="/home/travis/.cache/openwrt"
 matrix:
   fast_finish: true
   include:
+    - env: _build_name="netgear-wnr2000+tplink-wr842nd" _operation="init"
     - env: _build_name="netgear-wnr2000+tplink-wr842nd" _operation="download"
     - env: _build_name="netgear-wnr2000+tplink-wr842nd" _operation="host_tools"
 script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" "$_operation"

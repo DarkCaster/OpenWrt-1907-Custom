@@ -30,54 +30,113 @@ echo "build_name: $build_name"
 echo "operation: $operation"
 echo
 
-#chdir
-cd "$script_dir"
-
-#remove dir with extra stuff needed for build
-rm -rfv "external"
-mkdir -pv "external"
-
-#init helper repos
-pushd "external" 1>/dev/null
-echo "installing build scripts"
-git clone --depth 1 "$scripts_repo" scripts
-echo
-echo "installing build configs"
-git clone --depth 1 "$configs_repo" configs
-echo
-popd 1>/dev/null
-
-echo "env before cleanup:"
-export
-echo
-
-echo "cleaning up build env"
-. "external/scripts/Build/clean-env.sh.in"
-echo
-
-echo "env after cleanup:"
-export
-echo
-
-echo "running build preparation scripts:"
-while read script; do
-  echo "running $script"
-  "$script"
-done < <(find "external/scripts/Build/$openwrt_version" -type f | sort)
-
-config_file="external/configs/$openwrt_version/$build_name.diffconfig"
-echo "installing config from $config_file"
-cp "$config_file" .config
-make defconfig
-./scripts/diffconfig.sh > test.diffconfig
-echo "ensuring diffconfig is unchanged"
-diff "test.diffconfig" "$config_file" 1>/dev/null
-rm -v "test.diffconfig"
-
 jobs_count=`nproc`
 (( jobs_count *= 2 ))
 
-echo "building openwrt ($jobs_count jobs)"
-make world -j$jobs_count
+pushd "$script_dir" 1>/dev/null
+commit_hash=`git rev-parse HEAD`
+popd 1>/dev/null
 
-exit 1
+if [[ -z $commit_hash ]]; then
+  commit_hash="unknown_git_commit"
+fi
+
+scripts_dir="$script_dir/$external/scripts"
+configs_dir="$script_dir/$external/configs"
+config_file="$configs_dir/$openwrt_version/$build_name.diffconfig"
+
+cache_dir="$HOME/.cache/openwrt_build"
+if [[ ! -z OPENWRT_BUILD_CACHE_DIR ]]; then
+  cache_dir="$OPENWRT_BUILD_CACHE_DIR"
+fi
+
+echo "using cache directory at $cache_dir"
+
+cache_dl="$cache_dir/downloads_$commit_hash"
+cache_stage="$cache_dir/stage_$commit_hash"
+cache_status="$cache_dir/status_$commit_hash"
+
+mkdir -pv "$cache_dl"
+mkdir -pv "$cache_stage"
+mkdir -pv "$cache_status"
+
+clean_env() {
+  echo "performing env cleanup"
+  echo "env before cleanup:"
+  export
+  echo
+  echo "cleaning up build env"
+  . "$scripts_dir/Build/clean-env.sh.in"
+  echo
+  echo "env after cleanup:"
+  export
+  echo
+}
+
+clean_cache() {
+  #clean cache
+  rm -rfv "$cache_dl"/*
+  rm -rfv "$cache_stage"/*
+  rm -rfv "$cache_status"/*
+}
+
+full_init() {
+  clean_cache
+  
+  #remove dir with extra stuff needed for build
+  rm -rfv "$script_dir/external"
+  mkdir -pv "$script_dir/external"
+
+  pushd "$script_dir" 1>/dev/null
+
+  #init helper repos
+  pushd "$script_dir/external" 1>/dev/null
+  echo "installing build scripts"
+  git clone --depth 1 "$scripts_repo" scripts
+  echo "installing build configs"
+  git clone --depth 1 "$configs_repo" configs
+  popd 1>/dev/null
+
+  #clean_env
+  clean_env
+
+  echo "running build preparation scripts:"
+  while read script; do
+    echo "running $script"
+    "$script"
+  done < <(find "$scripts_dir/Build/$openwrt_version" -type f | sort)
+
+  echo "installing config from $config_file"
+  cp "$config_file" .config
+  make defconfig
+  ./scripts/diffconfig.sh > test.diffconfig
+  echo "ensuring diffconfig is unchanged"
+  diff "test.diffconfig" "$config_file" 1>/dev/null
+  rm -v "test.diffconfig"
+
+  popd 1>/dev/null
+}
+
+mark_stage_completion() {
+  touch "$cache_status/$operation"
+}
+
+if [[ $operation = "init" ]]; then
+  full_init
+  mark_stage_completion
+else
+  echo "operation $operation is not supported"
+  clean_cache
+  exit 1
+fi
+
+
+
+
+
+
+
+
+
+#echo "building openwrt ($jobs_count jobs)"
+#make world -j$jobs_count V=s
