@@ -56,19 +56,13 @@ cache_dl="$cache_dir/downloads_${TRAVIS_BUILD_ID}_${openwrt_version}_${build_nam
 cache_stage="$cache_dir/stage_${TRAVIS_BUILD_ID}_${openwrt_version}_${build_name}_${commit_hash}"
 cache_status="$cache_dir/status_${TRAVIS_BUILD_ID}_${openwrt_version}_${build_name}_${commit_hash}"
 
-mkdir -pv "$cache_dir"
 mkdir -pv "$cache_dl"
 mkdir -pv "$cache_stage"
 mkdir -pv "$cache_status"
 
 clean_env() {
-  echo "performing env cleanup"
-  echo "env before cleanup:"
-  export
-  echo
   echo "cleaning up build env"
   . "$scripts_dir/Build/clean-env.sh.in"
-  echo
   echo "env after cleanup:"
   export
   echo
@@ -123,6 +117,16 @@ mark_stage_completion() {
   touch "$cache_status/$operation"
 }
 
+check_stage_completion() {
+  local operation="$1"
+  echo "checking stage-completion mark $cache_status/$operation"
+  if [[ ! -f "$cache_status/$operation" ]]; then
+    echo "no stage-completion mark found at $cache_status/$operation"
+    echo "cannot proceed..."
+    exit 3
+  fi
+}
+
 create_pack() {
   local pack_tar="$operation.tar"
   local pack_z="$operation.tar.xz"
@@ -162,9 +166,10 @@ if [[ $operation = "init" ]]; then
   create_pack
   mark_stage_completion
 elif [[ $operation = "download" ]]; then
+  check_stage_completion "init"
   restore_pack "init"
   clean_env
-  make download -j$jobs_count V=s
+  make download -j$jobs_count
   create_pack
   mark_stage_completion
 else
