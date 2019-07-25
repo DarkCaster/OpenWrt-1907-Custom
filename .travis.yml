@@ -6,6 +6,7 @@ addons:
     packages:
     - rsync
     - xz-utils
+    - python
 cache:
   directories:
     - /home/travis/.cache/openwrt
