@@ -21,6 +21,8 @@ matrix:
   include:
     - stage: "prepare"
       script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "netgear-wnr2000+tplink-wr842nd" "prepare"
+    - stage: "tools"
+      script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "netgear-wnr2000+tplink-wr842nd" "tools"
     - stage: "toolchain"
       script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "netgear-wnr2000+tplink-wr842nd" "toolchain"
     - stage: "firmware"

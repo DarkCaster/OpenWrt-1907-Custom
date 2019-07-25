@@ -163,14 +163,21 @@ restore_pack() {
 
 if [[ $operation = "prepare" ]]; then
   full_init
-  make download -j$jobs_count
+  make download -j$jobs_count V=s
   create_pack
   mark_stage_completion
-elif [[ $operation = "toolchain" ]]; then
+elif [[ $operation = "tools" ]]; then
   check_stage_completion "prepare"
   restore_pack "prepare"
   clean_env
-  make toolchain/install -j$jobs_count
+  make tools/install -j$jobs_count V=s
+  create_pack
+  mark_stage_completion
+elif [[ $operation = "toolchain" ]]; then
+  check_stage_completion "tools"
+  restore_pack "tools"
+  clean_env
+  make toolchain/install -j$jobs_count V=s
   create_pack
   mark_stage_completion
 elif [[ $operation = "firmware" ]]; then
