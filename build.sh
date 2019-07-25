@@ -52,11 +52,9 @@ fi
 
 echo "using cache directory at $cache_dir"
 
-cache_dl="$cache_dir/downloads_${TRAVIS_BUILD_ID}_${openwrt_version}_${build_name}_${commit_hash}"
 cache_stage="$cache_dir/stage_${TRAVIS_BUILD_ID}_${openwrt_version}_${build_name}_${commit_hash}"
 cache_status="$cache_dir/status_${TRAVIS_BUILD_ID}_${openwrt_version}_${build_name}_${commit_hash}"
 
-mkdir -pv "$cache_dl"
 mkdir -pv "$cache_stage"
 mkdir -pv "$cache_status"
 
@@ -70,9 +68,12 @@ clean_env() {
 
 clean_cache() {
   #clean cache
-  rm -rf "$cache_dl"/*
-  rm -rf "$cache_stage"/*
-  rm -rf "$cache_status"/*
+  rm -rf "$cache_stage"/*/*
+  while read file; do
+    echo "trimming $file"
+    rm "$file"
+    touch "$file"
+  done < <(find "$cache_stage" -type f | sort)
 }
 
 full_init() {
@@ -159,11 +160,12 @@ restore_pack() {
   echo "cleaning up"
   rm -rf "$cache_stage/$operation"
   rm -f "$cache_stage/$pack_z"
+  touch "$cache_stage/$pack_z"
 }
 
 if [[ $operation = "prepare" ]]; then
   full_init
-  make download -j$jobs_count V=s
+  make download -j$jobs_count
   create_pack
   mark_stage_completion
 elif [[ $operation = "tools" ]]; then
