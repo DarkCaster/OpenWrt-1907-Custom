@@ -96,13 +96,14 @@ clean_cache() {
 }
 
 on_error() {
-  echo "build failed!"
+  echo "build failed! (line $1)"
+  trap - ERR
   stop_ping
   clean_cache
   exit 0
 }
 
-trap on_error ERR
+trap 'on_error $LINENO' ERR
 
 clean_env() {
   echo "cleaning up build env"

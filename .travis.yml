@@ -1,10 +1,8 @@
 language: c
 os: linux
 dist: bionic
-addons:
-  apt:
-    packages:
-    - pigz
+before_install:
+  - sudo apt-get install -y pigz
 cache:
   directories:
     - /home/travis/.cache/openwrt
