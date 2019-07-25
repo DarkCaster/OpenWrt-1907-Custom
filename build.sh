@@ -186,7 +186,9 @@ stop_ping() {
 
 if [[ $operation = "prepare" ]]; then
   full_init
+  run_ping
   make download -j$jobs_count
+  stop_ping
   create_pack
   mark_stage_completion
 elif [[ $operation = "tools" ]]; then
