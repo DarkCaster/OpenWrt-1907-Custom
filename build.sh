@@ -137,7 +137,7 @@ create_pack() {
 }
 
 restore_pack() {
-
+  true
 }
 
 if [[ $operation = "init" ]]; then
