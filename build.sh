@@ -82,7 +82,7 @@ clean_cache() {
 
 full_init() {
   clean_cache
-  
+
   #remove dir with extra stuff needed for build
   rm -rfv "$script_dir/external"
   mkdir -pv "$script_dir/external"
@@ -121,9 +121,29 @@ mark_stage_completion() {
   touch "$cache_status/$operation"
 }
 
+create_pack() {
+  local pack_tar="$operation.tar"
+  local pack_z="$operation.tar.xz"
+  echo "creating pack: $cache_stage/$pack_z"
+  rm -rfv "$cache_stage/$operation"
+  rm -fv "$cache_stage/$pack_tar"
+  rm -fv "$cache_stage/$pack_z"
+  #TODO: copy files into pack (whole repo without .git dir)
+  mkdir "$cache_stage/$operation"
+  pushd "$cache_stage" 1>/dev/null
+  tar cvf "$pack_tar" "$operation"
+  xz -4e "$pack_tar"
+  popd
+}
+
+restore_pack() {
+
+}
+
 if [[ $operation = "init" ]]; then
   full_init
   mark_stage_completion
+  create_pack
 else
   echo "operation $operation is not supported"
   clean_cache

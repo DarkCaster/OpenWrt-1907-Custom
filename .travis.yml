@@ -1,6 +1,11 @@
 language: c
 os: linux
 dist: bionic
+addons:
+  apt:
+    packages:
+    - rsync
+    - xz-utils
 cache:
   directories:
     - /home/travis/.cache/openwrt
@@ -13,7 +18,6 @@ env:
     - _openwrt_version="OpenWrt-1907-custom"
     - OPENWRT_BUILD_CACHE_DIR="/home/travis/.cache/openwrt"
 matrix:
-  fast_finish: true
   include:
     - env: _build_name="netgear-wnr2000+tplink-wr842nd" _operation="init"
     - env: _build_name="netgear-wnr2000+tplink-wr842nd" _operation="download"
