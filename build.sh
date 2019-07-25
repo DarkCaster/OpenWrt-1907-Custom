@@ -170,7 +170,7 @@ elif [[ $operation = "tools" ]]; then
   check_stage_completion "prepare"
   restore_pack "prepare"
   clean_env
-  make tools/install -j$jobs_count V=s
+  make tools/install -j1 V=s
   create_pack
   mark_stage_completion
 elif [[ $operation = "toolchain" ]]; then
