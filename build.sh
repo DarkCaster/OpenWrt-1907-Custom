@@ -138,7 +138,7 @@ create_pack() {
   rsync --exclude="/.git" --exclude="/build.sh" -vcrlHpEogDtW --numeric-ids --delete-before --quiet "$script_dir"/ "$cache_stage/$operation"/
   pushd "$cache_stage" 1>/dev/null
   tar cf "$pack_tar" "$operation"
-  xz -3e "$pack_tar"
+  xz --threads=0 -v -6 "$pack_tar"
   popd 1>/dev/null
   rm -rf "$cache_stage/$operation"
   echo "current stage dir contents: $cache_stage"
