@@ -7,7 +7,6 @@ addons:
     - rsync
     - xz-utils
 cache:
-  ccache: true
   directories:
     - /home/travis/.cache/openwrt
 git:
