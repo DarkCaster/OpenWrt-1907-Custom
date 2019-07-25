@@ -7,6 +7,7 @@ addons:
     - rsync
     - xz-utils
 cache:
+  ccache: true
   directories:
     - /home/travis/.cache/openwrt
 git:
@@ -19,9 +20,9 @@ env:
     - OPENWRT_BUILD_CACHE_DIR="/home/travis/.cache/openwrt"
 matrix:
   include:
-    - stage: "init"
-      script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "netgear-wnr2000+tplink-wr842nd" "init"
-    - stage: "download"
-      script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "netgear-wnr2000+tplink-wr842nd" "download"
+    - stage: "prepare"
+      script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "netgear-wnr2000+tplink-wr842nd" "prepare"
     - stage: "toolchain"
       script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "netgear-wnr2000+tplink-wr842nd" "toolchain"
+    - stage: "firmware"
+      script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "netgear-wnr2000+tplink-wr842nd" "firmware"

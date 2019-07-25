@@ -161,22 +161,23 @@ restore_pack() {
   rm -f "$cache_stage/$pack_z"
 }
 
-if [[ $operation = "init" ]]; then
+if [[ $operation = "prepare" ]]; then
   full_init
-  create_pack
-  mark_stage_completion
-elif [[ $operation = "download" ]]; then
-  check_stage_completion "init"
-  restore_pack "init"
-  clean_env
   make download -j$jobs_count
   create_pack
   mark_stage_completion
 elif [[ $operation = "toolchain" ]]; then
-  check_stage_completion "download"
-  restore_pack "download"
+  check_stage_completion "prepare"
+  restore_pack "prepare"
   clean_env
   make toolchain/install -j$jobs_count
+  create_pack
+  mark_stage_completion
+elif [[ $operation = "firmware" ]]; then
+  check_stage_completion "toolchain"
+  restore_pack "toolchain"
+  clean_env
+  make world -j$jobs_count
   create_pack
   mark_stage_completion
 else
