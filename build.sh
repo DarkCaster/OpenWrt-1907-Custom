@@ -139,7 +139,7 @@ create_pack() {
   rsync --exclude="/.git" --exclude="/build.sh" -vcrlHpEogDtW --numeric-ids --delete-before --quiet "$script_dir"/ "$cache_stage/$operation"/
   pushd "$cache_stage" 1>/dev/null
   tar cf "$pack_tar" "$operation"
-  xz --threads=0 -v -6 "$pack_tar"
+  xz --threads=0 -v -3 "$pack_tar"
   popd 1>/dev/null
   rm -rf "$cache_stage/$operation"
   echo "current stage dir contents: $cache_stage"
@@ -159,8 +159,29 @@ restore_pack() {
   popd 1>/dev/null
   echo "cleaning up"
   rm -rf "$cache_stage/$operation"
-  rm -f "$cache_stage/$pack_z"
+  echo "trimming $cache_stage/$pack_z"
+  rm "$cache_stage/$pack_z"
   touch "$cache_stage/$pack_z"
+}
+
+ping_pid=""
+
+run_ping() {
+  echo "starting ping-task"
+  (
+    set +e
+    while true; do
+      sleep 60
+      echo "...building..."
+    done
+  ) &
+  ping_pid="$!"
+}
+
+stop_ping() {
+  if [[ ! -z $ping_pid ]]; then
+    kill -SIGTERM $ping_pid || true
+  fi
 }
 
 if [[ $operation = "prepare" ]]; then
@@ -172,21 +193,27 @@ elif [[ $operation = "tools" ]]; then
   check_stage_completion "prepare"
   restore_pack "prepare"
   clean_env
+  run_ping
   make tools/install -j$jobs_count
+  stop_ping
   create_pack
   mark_stage_completion
 elif [[ $operation = "toolchain" ]]; then
   check_stage_completion "tools"
   restore_pack "tools"
   clean_env
+  run_ping
   make toolchain/install -j$jobs_count
+  stop_ping
   create_pack
   mark_stage_completion
 elif [[ $operation = "firmware" ]]; then
   check_stage_completion "toolchain"
   restore_pack "toolchain"
   clean_env
+  run_ping
   make world -j$jobs_count
+  stop_ping
   create_pack
   mark_stage_completion
 else
