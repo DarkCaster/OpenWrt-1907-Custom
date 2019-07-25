@@ -41,8 +41,8 @@ if [[ -z $commit_hash ]]; then
   commit_hash="unknown_git_commit"
 fi
 
-scripts_dir="$script_dir/$external/scripts"
-configs_dir="$script_dir/$external/configs"
+scripts_dir="$script_dir/external/scripts"
+configs_dir="$script_dir/external/configs"
 config_file="$configs_dir/$openwrt_version/$build_name.diffconfig"
 
 cache_dir="$HOME/.cache/openwrt_build"
@@ -118,6 +118,7 @@ full_init() {
 }
 
 mark_stage_completion() {
+  echo "creating stage-completion mark $cache_status/$operation"
   touch "$cache_status/$operation"
 }
 
@@ -142,8 +143,8 @@ restore_pack() {
 
 if [[ $operation = "init" ]]; then
   full_init
-  mark_stage_completion
   create_pack
+  mark_stage_completion
 else
   echo "operation $operation is not supported"
   clean_cache
