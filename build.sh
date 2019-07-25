@@ -1,13 +1,10 @@
 #!/bin/bash
 
-set -eE
-
 ping_pid=""
 
 run_ping() {
   echo "starting build timer"
   (
-    set +eE
     trap - ERR
     timer="0"
     while true; do
@@ -26,8 +23,6 @@ stop_ping() {
     ping_pid=""
   fi
 }
-
-trap stop_ping ERR
 
 script_dir="$( cd "$( dirname "$0" )" && pwd )"
 
@@ -49,16 +44,20 @@ if [[ -z $scripts_repo || -z $configs_repo || -z $openwrt_version || -z $build_n
   exit 2
 fi
 
+jobs_count=`nproc 2>/dev/null`
+(( jobs_count *= 2 ))
+[[ -z $jobs_count ]] && jobs_count="1"
+
 echo "build config:"
 echo "scripts_repo: $scripts_repo"
 echo "configs_repo: $configs_repo"
 echo "openwrt_version: $openwrt_version"
 echo "build_name: $build_name"
 echo "operation: $operation"
+echo "jobs count: $jobs_count"
 echo
 
-jobs_count=`nproc`
-(( jobs_count *= 2 ))
+
 
 pushd "$script_dir" 1>/dev/null
 commit_hash=`git rev-parse HEAD`
@@ -85,22 +84,31 @@ cache_status="$cache_dir/status_${TRAVIS_BUILD_ID}_${openwrt_version}_${build_na
 mkdir -pv "$cache_stage"
 mkdir -pv "$cache_status"
 
-clean_env() {
-  echo "cleaning up build env"
-  . "$scripts_dir/Build/clean-env.sh.in"
-  echo "env after cleanup:"
-  export
-  echo
-}
-
 clean_cache() {
-  #clean cache
+  echo "cleaning stage-cache files"
   rm -rf "$cache_stage"/*/*
   while read file; do
     echo "trimming $file"
     rm "$file"
     touch "$file"
   done < <(find "$cache_stage" -type f)
+}
+
+on_error() {
+  echo "build failed!"
+  stop_ping
+  clean_cache
+  exit 0
+}
+
+trap on_error ERR
+
+clean_env() {
+  echo "cleaning up build env"
+  . "$scripts_dir/Build/clean-env.sh.in"
+  echo "env after cleanup:"
+  export
+  echo
 }
 
 full_init() {
@@ -140,21 +148,6 @@ full_init() {
   popd 1>/dev/null
 }
 
-mark_stage_completion() {
-  echo "creating stage-completion mark $cache_status/$operation"
-  touch "$cache_status/$operation"
-}
-
-check_stage_completion() {
-  local operation="$1"
-  echo "checking stage-completion mark $cache_status/$operation"
-  if [[ ! -f "$cache_status/$operation" ]]; then
-    echo "no stage-completion mark found at $cache_status/$operation"
-    echo "cannot proceed..."
-    exit 3
-  fi
-}
-
 create_pack() {
   local pack_tar="$operation.tar"
   local pack_z="$operation.tar.xz"
@@ -166,23 +159,30 @@ create_pack() {
   rsync --exclude="/.git" --exclude="/build.sh" -vcrlHpEogDtW --numeric-ids --delete-before --quiet "$script_dir"/ "$cache_stage/$operation"/
   pushd "$cache_stage" 1>/dev/null
   tar cf "$pack_tar" "$operation"
-  xz --threads=0 -v -3 "$pack_tar"
+  xz --threads=$jobs_count -v -2 "$pack_tar"
   popd 1>/dev/null
   rm -rf "$cache_stage/$operation"
-  echo "current stage dir contents: $cache_stage"
-  ls -la "$cache_stage"
+  echo "creating stage-completion mark $cache_status/$operation"
+  touch "$cache_status/$operation"
 }
 
 restore_pack() {
   local operation="$1"
   local pack_z="$operation.tar.xz"
-  echo "current stage dir contents: $cache_stage"
-  ls -la "$cache_stage"
+  echo "checking stage-completion mark $cache_status/$operation"
+  if [[ ! -f "$cache_status/$operation" ]]; then
+    echo "no stage-completion mark found at $cache_status/$operation"
+    echo "cannot proceed..."
+    trap - ERR
+    stop_ping
+    clean_cache
+    return 1
+  fi
   echo "restoring pack: $cache_stage/$pack_z"
   rm -rf "$cache_stage/$operation"
   pushd "$cache_stage" 1>/dev/null
   xz -c -d "$cache_stage/$pack_z" | tar xf -
-  rsync --exclude="/.git" --exclude="/build.sh" -vcrlHpEogDtW --numeric-ids --delete-before --quiet "$cache_stage/$operation"/ "$script_dir"/
+  rsync --exclude="/.git" --exclude="/build.sh" -vrlHpEogDtW --numeric-ids --delete-before --quiet "$cache_stage/$operation"/ "$script_dir"/
   popd 1>/dev/null
   echo "cleaning up"
   rm -rf "$cache_stage/$operation"
@@ -194,41 +194,39 @@ restore_pack() {
 # handle build stages
 
 if [[ $operation = "prepare" ]]; then
-  full_init
   run_ping
+  full_init
   make download -j$jobs_count
   stop_ping
   create_pack
-  mark_stage_completion
 elif [[ $operation = "tools" ]]; then
-  check_stage_completion "prepare"
+  run_ping
   restore_pack "prepare"
   clean_env
-  run_ping
   make tools/install -j$jobs_count
-  stop_ping
   create_pack
-  mark_stage_completion
-elif [[ $operation = "toolchain" ]]; then
-  check_stage_completion "tools"
+elif [[ $operation = "toolchain_prep" ]]; then
+  run_ping
   restore_pack "tools"
   clean_env
-  run_ping
-  make toolchain/install -j$jobs_count
-  stop_ping
+  make toolchain/gcc/initial/compile -j$jobs_count
   create_pack
-  mark_stage_completion
-elif [[ $operation = "firmware" ]]; then
-  check_stage_completion "toolchain"
-  restore_pack "toolchain"
+elif [[ $operation = "toolchain_final" ]]; then
+  run_ping
+  restore_pack "toolchain_prep"
   clean_env
-  run_ping
-  make world -j$jobs_count
-  stop_ping
+  make toolchain/install -j$jobs_count
   create_pack
-  mark_stage_completion
+elif [[ $operation = "firmware" ]]; then
+  run_ping
+  restore_pack "toolchain_final"
+  clean_env
+  make world -j$jobs_count
+  create_pack
 else
   echo "operation $operation is not supported"
   clean_cache
   exit 1
 fi
+
+stop_ping
