@@ -19,7 +19,7 @@ env:
     - OPENWRT_BUILD_CACHE_DIR="/home/travis/.cache/openwrt"
 matrix:
   include:
-    - stage "ar71xx init"
+    - stage: "ar71xx init"
       script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "netgear-wnr2000+tplink-wr842nd" "init"
-    - stage "ar71xx download"
+    - stage: "ar71xx download"
       script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "netgear-wnr2000+tplink-wr842nd" "download"
