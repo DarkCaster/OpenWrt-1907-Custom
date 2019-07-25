@@ -152,17 +152,14 @@ full_init() {
 
 create_pack() {
   local pack_z="$operation.tar.pigz"
+  local src_parent=`dirname "$script_dir"`
+  local src_name=`basename "$script_dir"`
   echo "creating pack: $cache_stage/$pack_z"
   rm -f "$cache_stage/$pack_z"
-  mkdir -p "$temp_dir/$operation"
-  echo "copying files"
-  rsync --exclude="/.git" --exclude="/build.sh" -vrlHpEogDtW --numeric-ids --delete-before --quiet "$script_dir"/ "$temp_dir/$operation"/
-  pushd "$temp_dir" 1>/dev/null
   echo "creating archive"
-  tar cf - "$operation" | pigz -3 - > "$pack_z"
-  mv "$pack_z" "$cache_stage/$pack_z"
+  pushd "$src_parent" 1>/dev/null
+  tar cf - --exclude="$src_name/.git" --exclude="$src_name/build.sh" --exclude="$src_name/.travis.yml" "$src_name" | pigz -5 - > "$cache_stage/$pack_z"
   popd 1>/dev/null
-  rm -rf "$cache_stage/$operation"
   echo "creating stage-completion mark $cache_status/$operation"
   touch "$cache_status/$operation"
 }
@@ -170,6 +167,7 @@ create_pack() {
 restore_pack() {
   local operation="$1"
   local pack_z="$operation.tar.pigz"
+  local src_parent=`dirname "$script_dir"`
   echo "checking stage-completion mark $cache_status/$operation"
   if [[ ! -f "$cache_status/$operation" ]]; then
     echo "no stage-completion mark found at $cache_status/$operation"
@@ -179,15 +177,19 @@ restore_pack() {
     clean_cache
     return 1
   fi
-  echo "restoring pack: $cache_stage/$pack_z"
-  pushd "$temp_dir" 1>/dev/null
-  echo "extracting archive"
-  pigz -c -d "$cache_stage/$pack_z" | tar xf -
-  echo "copying files"
-  rsync --exclude="/.git" --exclude="/build.sh" -vcrlHpEogDtW --numeric-ids --delete-before --quiet "$temp_dir/$operation"/ "$script_dir"/
+  echo "cleaning up source directory"
+  pushd "$script_dir" 1>/dev/null
+  for target in * .*
+  do
+    [[ $target = "." || $target = ".." || $target = ".git" || $target = "build.sh" || $target = ".travis.yml" ]] && continue || true
+    echo "removing $target"
+    rm -rf "$target"
+  done
   popd 1>/dev/null
-  echo "cleaning up"
-  rm -rf "$temp_dir/$operation"
+  echo "extracting pack: $cache_stage/$pack_z"
+  pushd "$src_parent" 1>/dev/null
+  pigz -c -d "$cache_stage/$pack_z" | tar xf -
+  popd 1>/dev/null
   echo "trimming $cache_stage/$pack_z"
   rm "$cache_stage/$pack_z"
   touch "$cache_stage/$pack_z"
