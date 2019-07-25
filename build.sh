@@ -56,6 +56,7 @@ cache_dl="$cache_dir/downloads_$openwrt_version_$build_name_$commit_hash"
 cache_stage="$cache_dir/stage_$openwrt_version_$build_name_$commit_hash"
 cache_status="$cache_dir/status_$openwrt_version_$build_name_$commit_hash"
 
+mkdir -pv "$cache_dir"
 mkdir -pv "$cache_dl"
 mkdir -pv "$cache_stage"
 mkdir -pv "$cache_status"
@@ -132,7 +133,7 @@ create_pack() {
   mkdir "$cache_stage/$operation"
   rsync --exclude="/.git" --exclude="/build.sh" -vcrlHpEogDtW --numeric-ids --delete-before --quiet "$script_dir"/ "$cache_stage/$operation"/
   pushd "$cache_stage" 1>/dev/null
-  tar cvf "$pack_tar" "$operation"
+  tar cf "$pack_tar" "$operation"
   xz -3e "$pack_tar"
   popd 1>/dev/null
   rm -rf "$cache_stage/$operation"
@@ -148,7 +149,7 @@ restore_pack() {
   echo "restoring pack: $cache_stage/$pack_z"
   rm -rf "$cache_stage/$operation"
   pushd "$cache_stage" 1>/dev/null
-  xz -c -d "$cache_stage/$pack_z" | tar xvf -
+  xz -c -d "$cache_stage/$pack_z" | tar xf -
   rsync --exclude="/.git" --exclude="/build.sh" -vcrlHpEogDtW --numeric-ids --delete-before --quiet "$cache_stage/$operation"/ "$script_dir"/
   popd 1>/dev/null
   echo "cleaning up"
