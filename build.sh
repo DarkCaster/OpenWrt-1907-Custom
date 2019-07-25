@@ -133,13 +133,18 @@ create_pack() {
   rsync --exclude="/.git" --exclude="/build.sh" -vcrlHpEogDtW --numeric-ids --delete-before "$script_dir"/ "$cache_stage/$operation"/
   pushd "$cache_stage" 1>/dev/null
   tar cvf "$pack_tar" "$operation"
-  xz -4e "$pack_tar"
+  xz -3e "$pack_tar"
   popd 1>/dev/null
+  rm -rfv "$cache_stage/$operation"
+  echo "current stage dir contents: $cache_stage"
+  ls -la "$cache_stage"
 }
 
 restore_pack() {
   local operation="$1"
   local pack_z="$operation.tar.xz"
+  echo "current stage dir contents: $cache_stage"
+  ls -la "$cache_stage"
   echo "restoring pack: $cache_stage/$pack_z"
   rm -rfv "$cache_stage/$operation"
   pushd "$cache_stage" 1>/dev/null
