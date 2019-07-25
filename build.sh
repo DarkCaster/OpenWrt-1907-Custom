@@ -150,16 +150,16 @@ full_init() {
 }
 
 create_pack() {
-  local pack_tar="$operation.tar"
   local pack_z="$operation.tar.xz"
   echo "creating pack: $cache_stage/$pack_z"
   rm -f "$cache_stage/$pack_tar"
   rm -f "$cache_stage/$pack_z"
   mkdir -p "$temp_dir/$operation"
+  echo "copying files"
   rsync --exclude="/.git" --exclude="/build.sh" -vrlHpEogDtW --numeric-ids --delete-before --quiet "$script_dir"/ "$temp_dir/$operation"/
   pushd "$temp_dir" 1>/dev/null
-  tar cf "$pack_tar" "$operation"
-  xz --threads=$jobs_count -2 "$pack_tar"
+  echo "creating archive"
+  tar cf - "$operation" | xz -z --threads=$jobs_count -2 - > "$pack_z"
   mv "$pack_z" "$cache_stage/$pack_z"
   popd 1>/dev/null
   rm -rf "$cache_stage/$operation"
@@ -181,7 +181,9 @@ restore_pack() {
   fi
   echo "restoring pack: $cache_stage/$pack_z"
   pushd "$temp_dir" 1>/dev/null
+  echo "extracting archive"
   xz -c -d "$cache_stage/$pack_z" | tar xf -
+  echo "copying files"
   rsync --exclude="/.git" --exclude="/build.sh" -vcrlHpEogDtW --numeric-ids --delete-before --quiet "$temp_dir/$operation"/ "$script_dir"/
   popd 1>/dev/null
   echo "cleaning up"
@@ -197,7 +199,6 @@ if [[ $operation = "prepare" ]]; then
   run_ping
   full_init
   make download -j$jobs_count
-  stop_ping
   create_pack
 elif [[ $operation = "tools" ]]; then
   run_ping
