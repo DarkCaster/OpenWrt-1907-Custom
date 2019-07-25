@@ -14,15 +14,18 @@ env:
     - _configs_repo="https://github.com/DarkCaster/OpenWrt-Buildconfigs.git"
     - _openwrt_version="OpenWrt-1907-custom"
     - OPENWRT_BUILD_CACHE_DIR="/home/travis/.cache/openwrt"
+  matrix:
+    - _build_name="netgear-wnr2000+tplink-wr842nd"
+    - _build_name="test"
 matrix:
   include:
     - stage: "prepare"
-      script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "netgear-wnr2000+tplink-wr842nd" "prepare"
+      script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" "prepare"
     - stage: "tools"
-      script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "netgear-wnr2000+tplink-wr842nd" "tools"
+      script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" "tools"
     - stage: "toolchain prepare"
-      script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "netgear-wnr2000+tplink-wr842nd" "toolchain_prep"
+      script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" "toolchain_prep"
     - stage: "toolchain final"
-      script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "netgear-wnr2000+tplink-wr842nd" "toolchain_final"
+      script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" "toolchain_final"
     - stage: "firmware"
-      script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "netgear-wnr2000+tplink-wr842nd" "firmware"
+      script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" "firmware"
