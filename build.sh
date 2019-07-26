@@ -211,12 +211,15 @@ elif [[ $operation = "toolchain_final" ]]; then
   run_ping
   restore_pack "toolchain_prep"
   clean_env
-  make toolchain/install -j$jobs_count
+  make toolchain/compile -j$jobs_count
   create_pack
 elif [[ $operation = "packages" ]]; then
   run_ping
   restore_pack "toolchain_final"
   clean_env
+  make target/compile -j$jobs_count
+  make diffconfig
+  make package/cleanup
   make package/compile -j$jobs_count
   create_pack
 elif [[ $operation = "firmware" ]]; then
