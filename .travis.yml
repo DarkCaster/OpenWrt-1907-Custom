@@ -18,16 +18,24 @@ env:
     - _scripts_repo="https://github.com/DarkCaster/OpenWrt-Helper-Scripts"
     - _configs_repo="https://github.com/DarkCaster/OpenWrt-Buildconfigs.git"
     - _openwrt_version="OpenWrt-1907-custom"
-    - _build_cmd="./build.sh $_scripts_repo $_configs_repo $_openwrt_version $_build_name"
     - OPENWRT_BUILD_CACHE_DIR="/home/travis/.cache/openwrt"
 
 prepare: &prepare
   stage: "prepare"
-  script: $_build_cmd prepare
+  script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" prepare
+
+tools: &tools
+  stage: "tools"
+  script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" tools
 
 jobs:
   include:
     - <<: *prepare
-      env: _build_name="test1"
+      env: _build_name="netgear-wnr2000+tplink-wr842nd"
     - <<: *prepare
-      env: _build_name="test2"
+      env: _build_name="kvm64"
+
+    - <<: *tools
+      env: _build_name="netgear-wnr2000+tplink-wr842nd"
+    - <<: *tools
+      env: _build_name="kvm64"
