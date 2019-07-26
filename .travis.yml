@@ -37,7 +37,7 @@ toolchain_final: &toolchain_final
   script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" toolchain_final
 
 firmware: &firmware
-  stage: "firmware final"
+  stage: "firmware"
   script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" firmware
 
 jobs:
