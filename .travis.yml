@@ -1,13 +1,18 @@
 language: c
+
 os: linux
 dist: bionic
+
 before_install:
   - sudo apt-get install -y pigz
+
 cache:
   directories:
     - /home/travis/.cache/openwrt
+
 git:
   depth: false
+
 env:
   global:
     - _scripts_repo="https://github.com/DarkCaster/OpenWrt-Helper-Scripts"
@@ -15,29 +20,25 @@ env:
     - _openwrt_version="OpenWrt-1907-custom"
     - _build_cmd="./build.sh $_scripts_repo $_configs_repo $_openwrt_version $_build_name"
     - OPENWRT_BUILD_CACHE_DIR="/home/travis/.cache/openwrt"
+
+build_stages: &build_stages
+  - stage: "prepare"
+    script: $_build_cmd prepare
+  - stage: "tools"
+    script: $_build_cmd tools
+  - stage: "toolchain prepare"
+    script: $_build_cmd toolchain_prep
+  - stage: "toolchain final"
+    script: $_build_cmd toolchain_final
+  - stage: "firmware"
+    script: $_build_cmd firmware
+
 matrix:
   include:
-    - stage: "prepare"
-      env: _build_name="netgear-wnr2000+tplink-wr842nd"
-      env: _build_name="zzz"
-      script: $_build_cmd prepare
-
-    - stage: "tools"
+    - <<: *build_stages
       env:
-        - _build_name="netgear-wnr2000+tplink-wr842nd"
-      script: $_build_cmd tools
+        - _build_name="test1"
 
-    - stage: "toolchain prepare"
+    - <<: *build_stages
       env:
-        - _build_name="netgear-wnr2000+tplink-wr842nd"
-      script: $_build_cmd toolchain_prep
-
-    - stage: "toolchain final"
-      env:
-        - _build_name="netgear-wnr2000+tplink-wr842nd"
-      script: $_build_cmd toolchain_final
-
-    - stage: "firmware"
-      env:
-        - _build_name="netgear-wnr2000+tplink-wr842nd"
-      script: $_build_cmd firmware
+        - _build_name="test2"
