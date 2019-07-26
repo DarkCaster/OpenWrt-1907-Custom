@@ -86,21 +86,11 @@ cache_status="$cache_dir/status_${build_hash}"
 mkdir -pv "$cache_stage"
 mkdir -pv "$cache_status"
 
-clean_cache() {
-  echo "cleaning stage-cache files"
-  while read file; do
-    echo "trimming $file"
-    rm "$file"
-    touch "$file"
-  done < <(find "$cache_stage" -type f)
-}
-
 on_error() {
   echo "build failed! (line $1)"
   trap - ERR
   stop_ping
-  clean_cache
-  exit 0
+  exit 1
 }
 
 trap 'on_error $LINENO' ERR
@@ -114,8 +104,6 @@ clean_env() {
 }
 
 full_init() {
-  clean_cache
-
   #remove dir with extra stuff needed for build
   rm -rf "$script_dir/external"
   mkdir -pv "$script_dir/external"
@@ -174,7 +162,6 @@ restore_pack() {
     echo "cannot proceed..."
     trap - ERR
     stop_ping
-    clean_cache
     return 1
   fi
   echo "cleaning up source directory"
@@ -240,7 +227,6 @@ elif [[ $operation = "firmware" ]]; then
   create_pack
 else
   echo "operation $operation is not supported"
-  clean_cache
   exit 1
 fi
 
