@@ -18,13 +18,18 @@ env:
 matrix:
   include:
     - stage: "prepare"
-      script: $_build_cmd netgear-wnr2000+tplink-wr842nd prepare
-      script: $_build_cmd test prepare
+      script:
+        - $_build_cmd netgear-wnr2000+tplink-wr842nd prepare
+        - $_build_cmd zzz prepare
     - stage: "tools"
-      script: $_build_cmd netgear-wnr2000+tplink-wr842nd tools
+      script:
+        - $_build_cmd netgear-wnr2000+tplink-wr842nd tools
     - stage: "toolchain prepare"
-      script: $_build_cmd netgear-wnr2000+tplink-wr842nd toolchain_prep
+      script:
+        - $_build_cmd netgear-wnr2000+tplink-wr842nd toolchain_prep
     - stage: "toolchain final"
-      script: $_build_cmd netgear-wnr2000+tplink-wr842nd toolchain_final
+      script:
+        - $_build_cmd netgear-wnr2000+tplink-wr842nd toolchain_final
     - stage: "firmware"
-      script: $_build_cmd netgear-wnr2000+tplink-wr842nd firmware
+      script:
+        - $_build_cmd netgear-wnr2000+tplink-wr842nd firmware
