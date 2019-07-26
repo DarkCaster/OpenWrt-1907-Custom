@@ -159,7 +159,7 @@ create_pack() {
   rm -f "$cache_stage/$pack_z"
   echo "creating archive"
   pushd "$src_parent" 1>/dev/null
-  tar cf - --exclude="$src_name/.git" --exclude="$src_name/build.sh" --exclude="$src_name/.travis.yml" "$src_name" | pigz -5 - > "$cache_stage/$pack_z"
+  tar cf - --exclude="$src_name/.git" --exclude="$src_name/build.sh" --exclude="$src_name/.travis.yml" "$src_name" | pigz -4 - > "$cache_stage/$pack_z"
   popd 1>/dev/null
   echo "creating stage-completion mark $cache_status/$operation"
   touch "$cache_status/$operation"
@@ -221,11 +221,17 @@ elif [[ $operation = "toolchain_final" ]]; then
   clean_env
   make toolchain/install -j$jobs_count
   create_pack
-elif [[ $operation = "firmware" ]]; then
+elif [[ $operation = "packages" ]]; then
   run_ping
   restore_pack "toolchain_final"
   clean_env
-  make world -j$jobs_count
+  make package/install -j$jobs_count
+  create_pack
+elif [[ $operation = "firmware" ]]; then
+  run_ping
+  restore_pack "packages"
+  clean_env
+  make world -j1
   create_pack
 else
   echo "operation $operation is not supported"

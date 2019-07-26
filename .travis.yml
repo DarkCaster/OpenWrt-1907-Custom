@@ -36,6 +36,10 @@ toolchain_final: &toolchain_final
   stage: "toolchain final"
   script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" toolchain_final
 
+packages: &packages
+  stage: "packages"
+  script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" packages
+
 firmware: &firmware
   stage: "firmware"
   script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" firmware
@@ -60,6 +64,11 @@ jobs:
     - <<: *toolchain_final
       env: _build_name="netgear-wnr2000+tplink-wr842nd"
     - <<: *toolchain_final
+      env: _build_name="kvm64"
+
+    - <<: *packages
+      env: _build_name="netgear-wnr2000+tplink-wr842nd"
+    - <<: *packages
       env: _build_name="kvm64"
 
     - <<: *firmware
