@@ -21,7 +21,7 @@ env:
     - _build_cmd="./build.sh $_scripts_repo $_configs_repo $_openwrt_version $_build_name"
     - OPENWRT_BUILD_CACHE_DIR="/home/travis/.cache/openwrt"
 
-&prepare
+prepare: &prepare
   stage: "prepare"
   script: $_build_cmd prepare
 
