@@ -21,24 +21,11 @@ env:
     - _build_cmd="./build.sh $_scripts_repo $_configs_repo $_openwrt_version $_build_name"
     - OPENWRT_BUILD_CACHE_DIR="/home/travis/.cache/openwrt"
 
-build_stages: &build_stages
+prepare: &prepare
   - stage: "prepare"
     script: $_build_cmd prepare
-  - stage: "tools"
-    script: $_build_cmd tools
-  - stage: "toolchain prepare"
-    script: $_build_cmd toolchain_prep
-  - stage: "toolchain final"
-    script: $_build_cmd toolchain_final
-  - stage: "firmware"
-    script: $_build_cmd firmware
 
 matrix:
   include:
-    - <<: *build_stages
-      env:
-        - _build_name="test1"
-
-    - <<: *build_stages
-      env:
-        - _build_name="test2"
+    - <<: *prepare
+      env: _build_name="test1"
