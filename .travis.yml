@@ -13,23 +13,32 @@ env:
     - _scripts_repo="https://github.com/DarkCaster/OpenWrt-Helper-Scripts"
     - _configs_repo="https://github.com/DarkCaster/OpenWrt-Buildconfigs.git"
     - _openwrt_version="OpenWrt-1907-custom"
-    - _build_cmd="./build.sh $_scripts_repo $_configs_repo $_openwrt_version"
+    - _build_cmd="./build.sh $_scripts_repo $_configs_repo $_openwrt_version $_build_name"
     - OPENWRT_BUILD_CACHE_DIR="/home/travis/.cache/openwrt"
 matrix:
   include:
     - stage: "prepare"
-      script:
-        - $_build_cmd netgear-wnr2000+tplink-wr842nd prepare
-        - $_build_cmd zzz prepare
+      env:
+        - _build_name="netgear-wnr2000+tplink-wr842nd"
+        - _build_name="zzz"
+      script: $_build_cmd prepare
+
     - stage: "tools"
-      script:
-        - $_build_cmd netgear-wnr2000+tplink-wr842nd tools
+      env:
+        - _build_name="netgear-wnr2000+tplink-wr842nd"
+      script: $_build_cmd tools
+
     - stage: "toolchain prepare"
-      script:
-        - $_build_cmd netgear-wnr2000+tplink-wr842nd toolchain_prep
+      env:
+        - _build_name="netgear-wnr2000+tplink-wr842nd"
+      script: $_build_cmd toolchain_prep
+
     - stage: "toolchain final"
-      script:
-        - $_build_cmd netgear-wnr2000+tplink-wr842nd toolchain_final
+      env:
+        - _build_name="netgear-wnr2000+tplink-wr842nd"
+      script: $_build_cmd toolchain_final
+
     - stage: "firmware"
-      script:
-        - $_build_cmd netgear-wnr2000+tplink-wr842nd firmware
+      env:
+        - _build_name="netgear-wnr2000+tplink-wr842nd"
+      script: $_build_cmd firmware
