@@ -28,6 +28,18 @@ tools: &tools
   stage: "tools"
   script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" tools
 
+toolchain_prep: &toolchain_prep
+  stage: "toolchain prepare"
+  script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" toolchain_prep
+
+toolchain_final: &toolchain_final
+  stage: "toolchain final"
+  script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" toolchain_final
+
+firmware: &firmware
+  stage: "firmware final"
+  script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" firmware
+
 jobs:
   include:
     - <<: *prepare
@@ -38,4 +50,19 @@ jobs:
     - <<: *tools
       env: _build_name="netgear-wnr2000+tplink-wr842nd"
     - <<: *tools
+      env: _build_name="kvm64"
+
+    - <<: *toolchain_prep
+      env: _build_name="netgear-wnr2000+tplink-wr842nd"
+    - <<: *toolchain_prep
+      env: _build_name="kvm64"
+
+    - <<: *toolchain_final
+      env: _build_name="netgear-wnr2000+tplink-wr842nd"
+    - <<: *toolchain_final
+      env: _build_name="kvm64"
+
+    - <<: *firmware
+      env: _build_name="netgear-wnr2000+tplink-wr842nd"
+    - <<: *firmware
       env: _build_name="kvm64"
