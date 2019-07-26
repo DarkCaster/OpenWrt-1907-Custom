@@ -46,6 +46,9 @@ firmware: &firmware
 
 jobs:
   include:
+    - stage: "cleanup"
+      script: travis cache -b "$TRAVIS_BRANCH" -d -f
+
     - <<: *prepare
       env: _build_name="netgear-wnr2000+tplink-wr842nd"
     - <<: *prepare
