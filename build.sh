@@ -139,14 +139,15 @@ full_init() {
 }
 
 create_pack() {
-  local pack_z="$operation.tar.pigz"
+  local pack_z="$operation.tar"
   local src_parent=`dirname "$script_dir"`
   local src_name=`basename "$script_dir"`
   echo "creating pack: $cache_stage/$pack_z"
   rm -f "$cache_stage/$pack_z"
   echo "creating archive"
   pushd "$src_parent" 1>/dev/null
-  tar cf - --exclude="$src_name/.git" --exclude="$src_name/build.sh" --exclude="$src_name/.travis.yml" "$src_name" | pigz -4 - > "$cache_stage/$pack_z"
+  #tar cf - --exclude="$src_name/.git" --exclude="$src_name/build.sh" --exclude="$src_name/.travis.yml" "$src_name" | pigz -4 - > "$cache_stage/$pack_z"
+  tar cf "$cache_stage/$pack_z" --exclude="$src_name/.git" --exclude="$src_name/build.sh" --exclude="$src_name/.travis.yml" "$src_name"
   popd 1>/dev/null
   echo "creating stage-completion mark $cache_status/$operation"
   touch "$cache_status/$operation"
@@ -154,7 +155,7 @@ create_pack() {
 
 restore_pack() {
   local operation="$1"
-  local pack_z="$operation.tar.pigz"
+  local pack_z="$operation.tar"
   local src_parent=`dirname "$script_dir"`
   echo "checking stage-completion mark $cache_status/$operation"
   if [[ ! -f "$cache_status/$operation" ]]; then
@@ -175,7 +176,8 @@ restore_pack() {
   popd 1>/dev/null
   echo "extracting pack: $cache_stage/$pack_z"
   pushd "$src_parent" 1>/dev/null
-  pigz -c -d "$cache_stage/$pack_z" | tar xf -
+  #pigz -c -d "$cache_stage/$pack_z" | tar xf -
+  tar xf "$cache_stage/$pack_z"
   popd 1>/dev/null
   echo "trimming $cache_stage/$pack_z"
   rm "$cache_stage/$pack_z"
