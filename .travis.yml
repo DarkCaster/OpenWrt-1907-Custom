@@ -29,3 +29,5 @@ jobs:
   include:
     - <<: *prepare
       env: _build_name="test1"
+    - <<: *prepare
+      env: _build_name="test2"
