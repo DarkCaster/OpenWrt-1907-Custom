@@ -20,6 +20,10 @@ env:
     - _openwrt_version="OpenWrt-1907-custom"
     - OPENWRT_BUILD_CACHE_DIR="/home/travis/.cache/openwrt"
 
+cleanup: &cleanup
+  stage: "cleanup"
+  script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" cleanup
+
 prepare: &prepare
   stage: "prepare"
   script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" prepare
@@ -46,8 +50,10 @@ firmware: &firmware
 
 jobs:
   include:
-    - stage: "cleanup"
-      script: ( sudo apt-get install -y travis ) && travis cache -b "$TRAVIS_BRANCH" -d -f
+    - <<: *cleanup
+      env: _build_name="netgear-wnr2000+tplink-wr842nd"
+    - <<: *cleanup
+      env: _build_name="kvm64"
 
     - <<: *prepare
       env: _build_name="netgear-wnr2000+tplink-wr842nd"

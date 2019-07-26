@@ -82,7 +82,6 @@ echo "using cache directory at $cache_dir"
 build_hash=`echo "${TRAVIS_BUILD_ID}${openwrt_version}${build_name}${commit_hash}" | sha256sum -t - | cut -f1 -d' '`
 cache_stage="$cache_dir/stage_${build_hash}"
 cache_status="$cache_dir/status_${build_hash}"
-temp_dir=`mktemp -d -t XXXXXX`
 
 mkdir -pv "$cache_stage"
 mkdir -pv "$cache_status"
@@ -198,7 +197,13 @@ restore_pack() {
 
 # handle build stages
 
-if [[ $operation = "prepare" ]]; then
+cache_stage="$cache_dir/stage_${build_hash}"
+cache_status="$cache_dir/status_${build_hash}"
+
+if [[ $operation = "cleanup" ]]; then
+  rm -rfv "$cache_dir"/*
+  touch "$cache_dir/clear"
+elif [[ $operation = "prepare" ]]; then
   run_ping
   full_init
   make download -j$jobs_count
