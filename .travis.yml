@@ -18,9 +18,8 @@ env:
 matrix:
   include:
     - stage: "prepare"
-      env:
-        - _build_name="netgear-wnr2000+tplink-wr842nd"
-        - _build_name="zzz"
+      env: _build_name="netgear-wnr2000+tplink-wr842nd"
+      env: _build_name="zzz"
       script: $_build_cmd prepare
 
     - stage: "tools"
