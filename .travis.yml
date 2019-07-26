@@ -26,5 +26,5 @@ jobs:
     - &prepare
       stage: "prepare"
       script: $_build_cmd prepare
-    - <<: *prepare
       env: _build_name="test1"
+      env: _build_name="test2"
