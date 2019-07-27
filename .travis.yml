@@ -3,8 +3,8 @@ language: c
 os: linux
 dist: bionic
 
-#before_install:
-#  - sudo apt-get install -y pigz
+before_install:
+  - sudo apt-get install -y lrzip
 
 cache:
   directories:
