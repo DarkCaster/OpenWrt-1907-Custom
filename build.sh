@@ -62,11 +62,13 @@ echo
 
 pushd "$script_dir" 1>/dev/null
 commit_hash=`2>/dev/null git rev-parse HEAD || true`
+commit_hash_short=`2>/dev/null git log -1 --pretty=format:%h || true`
 popd 1>/dev/null
 
-if [[ -z $commit_hash ]]; then
+if [[ -z $commit_hash || -z $commit_hash_short ]]; then
   echo "failed to detect git commit hash"
   commit_hash="unknown_git_commit"
+  commit_hash_short="unknown"
 fi
 
 scripts_dir="$script_dir/external/scripts"
@@ -102,6 +104,12 @@ clean_env() {
   echo "env after cleanup:"
   export
   echo
+}
+
+clean_cache() {
+  echo "cleaning up cache"
+  rm -rfv "$cache_dir"/*
+  touch "$cache_dir/clear"
 }
 
 full_init() {
@@ -188,8 +196,7 @@ restore_pack() {
 # handle build stages
 
 if [[ $operation = "cleanup" ]]; then
-  rm -rfv "$cache_dir"/*
-  touch "$cache_dir/clear"
+  clean_cache
 elif [[ $operation = "prepare" ]]; then
   run_ping
   full_init
@@ -227,7 +234,21 @@ elif [[ $operation = "firmware" ]]; then
   restore_pack "packages"
   clean_env
   make world -j1
-  create_pack
+  clean_cache
+  echo "creating firmware archive: $script_dir/$result.tar.xz"
+  rm -rf "bin/targets/"*/*/"packages"
+  date=`date +"%Y-%m-%d"`
+  result="${build_name}_${date}_${commit_hash_short}"
+  tgt_count=`ls -1 "bin/targets"/* | wc -l`
+  if [[ $tgt_count = "1" ]]; then
+    pushd "bin/targets"/* 1>/dev/null
+    mv * "$result"
+  else
+    pushd "bin" 1>/dev/null
+    mv "targets" "$result"
+  fi
+  tar cf - "$result" | xz -9 - > "$script_dir/$result.tar.xz"
+  popd 1>/dev/null
 else
   echo "operation $operation is not supported"
   exit 1

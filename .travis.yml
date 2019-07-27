@@ -47,6 +47,19 @@ packages: &packages
 firmware: &firmware
   stage: "firmware"
   script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" firmware
+  before_deploy:
+      - git config --local user.name "Travis"
+      - git config --local user.email "deploy@travis-ci.com"
+      - if [[ $TRAVIS_EVENT_TYPE = "cron" ]]; then export TRAVIS_TAG="auto"; else export TRAVIS_TAG="manual"; fi
+      - git tag "$TRAVIS_TAG" || true
+  deploy:
+    provider: releases
+    overwrite: true
+    skip_cleanup: true
+    api_key:
+      secure: igoKvivmN0b+k8ZewuGHJSNQpqcgTlHxH5MyrV/SimAbiLkhI8GBZsWTIL0HNafpRYjXGvFXvkoH3Rqz582Wu0fUdxWvsiFpHatfNPwRxO2fLdhQMEAUcP125aRJ/P5eh+O9wSEN9AZtnoYQsycjrq7Yc9MIo9PfYtKVuHg8D/sZaVbolCKnRZy7j7Ou5dnWIH7gGGqzcCNYgz/MZpeQwOoz6uTM5L9T3HW91MqVZdRLY0H6AAugmbYnbBnn3+9H3zOCCLMwcWj38IaLn/+Jc7VIj2J4J/tWSFlHIRtALQnKAbxgHwGnlbMvKzybF87e/8uKj5ai4HtjHxSa31XGcxcuumj69q7EwOGj1F9oQxH3YdDhsCFHTJVKyzX8MMbUQq8s6Mt1K3dsxH63bMmb2j4LprtkVwhgetC7UvL5mJo6IBywhfTe8jG8m0+Cq+4QokTvTpjHoQywj7JtXSEN47XxtJD7GbHyfr9OoxT14+cEDi+F31/9e0gAAIgjmmjmM2tdyEAqkPuVBy735mb+Kr2Ntk8yJuoY4GCtKtHmk/Y9Ebr4ife/80u9f0grUxzaBxg9O1LUuah77yybm71HN2+e3x2IKiZ1AIPPFLEVQgZRT+11tWBXsgim1iGiQKwxGoaX8XEdKG6gqKnETGk7Cgjh224FCXW9VkjRch/qHHI=
+    file_glob: true
+    file: "*.tar.xz"
 
 jobs:
   include:
