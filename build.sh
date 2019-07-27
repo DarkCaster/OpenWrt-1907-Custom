@@ -48,7 +48,7 @@ if [[ -z $scripts_repo || -z $configs_repo || -z $openwrt_version || -z $build_n
 fi
 
 jobs_count=`nproc 2>/dev/null`
-(( jobs_count *= 2 ))
+### (( jobs_count *= 2 ))
 [[ -z $jobs_count ]] && jobs_count="1"
 
 echo "build config:"
@@ -155,7 +155,7 @@ create_pack() {
   rm -f "$cache_stage/$pack_z"
   echo "creating archive"
   pushd "$src_parent" 1>/dev/null
-  tar cf - --exclude="$src_name/.git" --exclude="$src_name/build.sh" --exclude="$src_name/.travis.yml" "$src_name" | lrzip -l -w 10 -L 9 -q - > "$cache_stage/$pack_z"
+  tar cf - --exclude="$src_name/.git" --exclude="$src_name/build.sh" --exclude="$src_name/.travis.yml" "$src_name" | lrzip -g -w 10 -L 1 -q - > "$cache_stage/$pack_z"
   #tar cf "$cache_stage/$pack_z" --exclude="$src_name/.git" --exclude="$src_name/build.sh" --exclude="$src_name/.travis.yml" "$src_name"
   popd 1>/dev/null
   echo "creating stage-completion mark $cache_status/$operation"
@@ -255,3 +255,5 @@ else
 fi
 
 stop_ping
+
+exit 0
