@@ -235,10 +235,10 @@ elif [[ $operation = "firmware" ]]; then
   clean_env
   make world -j1
   clean_cache
-  echo "creating firmware archive: $script_dir/$result.tar.xz"
   rm -rf "bin/targets/"*/*/"packages"
   date=`date +"%Y-%m-%d"`
   result="${build_name}_${date}_${commit_hash_short}"
+  echo "creating firmware archive: $script_dir/$result.tar.xz"
   tgt_count=`ls -1 "bin/targets"/* | wc -l`
   if [[ $tgt_count = "1" ]]; then
     pushd "bin/targets"/* 1>/dev/null
