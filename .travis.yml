@@ -11,7 +11,7 @@ cache:
     - /home/travis/.cache/openwrt
 
 git:
-  depth: false
+  depth: 1
 
 env:
   global:
@@ -22,31 +22,33 @@ env:
 
 cleanup: &cleanup
   stage: "cleanup"
-  script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" cleanup
+  script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" cleanup "$TRAVIS_BUILD_ID" "$TRAVIS_EVENT_TYPE"
 
 prepare: &prepare
   stage: "prepare"
-  script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" prepare
+  git:
+    depth: false
+  script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" prepare "$TRAVIS_BUILD_ID" "$TRAVIS_EVENT_TYPE"
 
 tools: &tools
   stage: "tools"
-  script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" tools
+  script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" tools "$TRAVIS_BUILD_ID" "$TRAVIS_EVENT_TYPE"
 
 toolchain_prep: &toolchain_prep
   stage: "toolchain prepare"
-  script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" toolchain_prep
+  script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" toolchain_prep "$TRAVIS_BUILD_ID" "$TRAVIS_EVENT_TYPE"
 
 toolchain_final: &toolchain_final
   stage: "toolchain final"
-  script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" toolchain_final
+  script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" toolchain_final "$TRAVIS_BUILD_ID" "$TRAVIS_EVENT_TYPE"
 
 packages: &packages
   stage: "packages"
-  script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" packages
+  script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" packages "$TRAVIS_BUILD_ID" "$TRAVIS_EVENT_TYPE"
 
 firmware: &firmware
   stage: "firmware"
-  script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" firmware
+  script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" firmware "$TRAVIS_BUILD_ID" "$TRAVIS_EVENT_TYPE"
   before_deploy:
       - git config --local user.name "Travis"
       - git config --local user.email "deploy@travis-ci.com"

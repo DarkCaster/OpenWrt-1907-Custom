@@ -1,5 +1,18 @@
 #!/bin/bash
 
+scripts_repo="$1"
+configs_repo="$2"
+openwrt_version="$3"
+build_name="$4"
+operation="$5"
+build_id="$6"
+event_type="$7"
+
+#hardcoded branch-specific parameters
+ext_repo="https://github.com/openwrt/openwrt.git"
+ext_branch="openwrt-19.07"
+int_branch="custom"
+
 set -eE
 
 ping_pid=""
@@ -29,18 +42,6 @@ stop_ping() {
 
 script_dir="$( cd "$( dirname "$0" )" && pwd )"
 
-scripts_repo="$1"
-configs_repo="$2"
-openwrt_version="$3"
-build_name="$4"
-operation="$5"
-
-if [[ ! -z $operation ]]; then
-  shift 5
-else
-  shift 4
-fi
-
 if [[ -z $scripts_repo || -z $configs_repo || -z $openwrt_version || -z $build_name ]]; then
   echo "usage: build.sh <scripts_repo> <configs_repo> <openwrt_version> <build_name> [operation]"
   echo "see invocation examples at .travis.yml"
@@ -58,6 +59,8 @@ echo "openwrt_version: $openwrt_version"
 echo "build_name: $build_name"
 echo "operation: $operation"
 echo "jobs count: $jobs_count"
+echo "build_id: $build_id"
+echo "event_type: $event_type"
 echo
 
 pushd "$script_dir" 1>/dev/null
@@ -82,7 +85,8 @@ fi
 
 echo "using cache directory at $cache_dir"
 
-build_hash=`echo "${TRAVIS_BUILD_ID}${openwrt_version}${build_name}${commit_hash}" | sha256sum -t - | cut -f1 -d' '`
+build_hash=`echo "${build_id}${openwrt_version}${build_name}${commit_hash}${event_type}" | sha256sum -t - | cut -f1 -d' '`
+
 cache_stage="$cache_dir/stage_${build_hash}"
 cache_status="$cache_dir/status_${build_hash}"
 
@@ -113,6 +117,21 @@ clean_cache() {
 }
 
 full_init() {
+  echo "cleaning-up and resetting git repo"
+  git clean -dfx --force
+  git checkout "int_branch"
+  git clean -dfx --force
+  git reset --hard
+
+  if [[ $event_type != "cron" ]]; then
+    echo "merging latest changes from $ext_repo repo, $ext_branch branch"
+    git config --local user.name "Anonymous"
+    git config --local user.email "anon@somewhere.com"
+    git pull --no-edit --commit "ext_repo" "ext_branch"
+  fi
+
+  git repack -a -d
+
   #remove dir with extra stuff needed for build
   rm -rf "$script_dir/external"
   mkdir -pv "$script_dir/external"
@@ -155,7 +174,7 @@ create_pack() {
   rm -f "$cache_stage/$pack_z"
   echo "creating archive"
   pushd "$src_parent" 1>/dev/null
-  tar cf - --exclude="$src_name/.git" --exclude="$src_name/build.sh" --exclude="$src_name/.travis.yml" "$src_name" | pigz -2 - > "$cache_stage/$pack_z"
+  tar cf - --exclude="$src_name/build.sh" --exclude="$src_name/.travis.yml" "$src_name" | pigz -3 - > "$cache_stage/$pack_z"
   #tar cf - --exclude="$src_name/.git" --exclude="$src_name/build.sh" --exclude="$src_name/.travis.yml" "$src_name" | lrzip -g -w 10 -L 1 -q - > "$cache_stage/$pack_z"
   #tar cf "$cache_stage/$pack_z" --exclude="$src_name/.git" --exclude="$src_name/build.sh" --exclude="$src_name/.travis.yml" "$src_name"
   popd 1>/dev/null
@@ -179,7 +198,7 @@ restore_pack() {
   pushd "$script_dir" 1>/dev/null
   for target in * .*
   do
-    [[ $target = "." || $target = ".." || $target = ".git" || $target = "build.sh" || $target = ".travis.yml" ]] && continue || true
+    [[ $target = "." || $target = ".." || $target = "build.sh" || $target = ".travis.yml" ]] && continue || true
     echo "removing $target"
     rm -rf "$target"
   done
