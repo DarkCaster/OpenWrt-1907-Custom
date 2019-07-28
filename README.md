@@ -1,5 +1,7 @@
 # Slightly customized OpenWrt fork based on official OpenWrt 19.07 release
 
+[![Build Status](https://travis-ci.com/DarkCaster/OpenWrt-1907-Custom.svg?branch=custom)](https://travis-ci.com/DarkCaster/OpenWrt-1907-Custom)
+
 Customizations and patches applied to original OpenWrt 19.07 source code:
 
 ## Procd changes
