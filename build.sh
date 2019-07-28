@@ -119,7 +119,7 @@ clean_cache() {
 full_init() {
   echo "cleaning-up and resetting git repo"
   git clean -dfx --force
-  git checkout "int_branch"
+  git checkout "$int_branch"
   git clean -dfx --force
   git reset --hard
 
@@ -127,7 +127,7 @@ full_init() {
     echo "merging latest changes from $ext_repo repo, $ext_branch branch"
     git config --local user.name "Anonymous"
     git config --local user.email "anon@somewhere.com"
-    git pull --no-edit --commit "ext_repo" "ext_branch"
+    git pull --no-edit --commit "$ext_repo" "$ext_branch"
   fi
 
   git repack -a -d
