@@ -123,7 +123,7 @@ full_init() {
   git clean -dfx --force
   git reset --hard
 
-  if [[ $event_type != "cron" ]]; then
+  if [[ $event_type = "cron" ]]; then
     echo "merging latest changes from $ext_repo repo, $ext_branch branch"
     git config --local user.name "Anonymous"
     git config --local user.email "anon@somewhere.com"
