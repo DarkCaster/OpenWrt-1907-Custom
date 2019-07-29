@@ -174,7 +174,7 @@ create_pack() {
   rm -f "$cache_stage/$pack_z"
   echo "creating archive"
   pushd "$src_parent" 1>/dev/null
-  tar cf - --exclude="$src_name/build.sh" --exclude="$src_name/.travis.yml" "$src_name" | pigz -4 - > "$cache_stage/$pack_z"
+  tar cf - --exclude="$src_name/build.sh" --exclude="$src_name/.travis.yml" "$src_name" | pigz -3 - > "$cache_stage/$pack_z"
   #tar cf - --exclude="$src_name/.git" --exclude="$src_name/build.sh" --exclude="$src_name/.travis.yml" "$src_name" | lrzip -g -w 10 -L 1 -q - > "$cache_stage/$pack_z"
   #tar cf "$cache_stage/$pack_z" --exclude="$src_name/.git" --exclude="$src_name/build.sh" --exclude="$src_name/.travis.yml" "$src_name"
   popd 1>/dev/null
