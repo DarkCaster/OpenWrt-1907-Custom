@@ -178,6 +178,8 @@ create_pack() {
   #tar cf - --exclude="$src_name/.git" --exclude="$src_name/build.sh" --exclude="$src_name/.travis.yml" "$src_name" | lrzip -g -w 10 -L 1 -q - > "$cache_stage/$pack_z"
   #tar cf "$cache_stage/$pack_z" --exclude="$src_name/.git" --exclude="$src_name/build.sh" --exclude="$src_name/.travis.yml" "$src_name"
   popd 1>/dev/null
+  echo -n "pack size: "
+  stat -c %s "$cache_stage/$pack_z"
   echo "creating stage-completion mark $cache_status/$operation"
   touch "$cache_status/$operation"
 }
