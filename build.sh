@@ -49,7 +49,7 @@ if [[ -z $scripts_repo || -z $configs_repo || -z $openwrt_version || -z $build_n
 fi
 
 jobs_count=`nproc 2>/dev/null`
-### (( jobs_count *= 2 ))
+(( jobs_count += 1 ))
 [[ -z $jobs_count ]] && jobs_count="1"
 
 echo "build config:"
@@ -270,7 +270,7 @@ elif [[ $operation = "firmware" ]]; then
     pushd "bin" 1>/dev/null
     mv "targets" "$result"
   fi
-  tar cf - "$result" | xz -9 - > "$script_dir/$result.tar.xz"
+  tar cf - "$result" | xz -6e - > "$script_dir/$result.tar.xz"
   popd 1>/dev/null
 else
   echo "operation $operation is not supported"
