@@ -270,7 +270,8 @@ elif [[ $operation = "firmware" ]]; then
     pushd "bin" 1>/dev/null
     mv "targets" "$result"
   fi
-  tar cf - "$result" | xz -6e - > "$script_dir/$result.tar.xz"
+  #TODO: sign
+  tar cf - "$result" | xz -9e - > "$script_dir/$result.tar.xz"
   popd 1>/dev/null
 else
   echo "operation $operation is not supported"
