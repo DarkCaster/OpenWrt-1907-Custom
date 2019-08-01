@@ -73,6 +73,8 @@ jobs:
       env: _build_name="kvm64"
     - <<: *cleanup
       env: _build_name="zyxel-keenetic-omni1+2"
+    - <<: *cleanup
+      env: _build_name="tplink-wr842n-v5"
 
     - <<: *prepare
       env: _build_name="netgear-wnr2000+tplink-wr842nd"
@@ -80,6 +82,8 @@ jobs:
       env: _build_name="kvm64"
     - <<: *prepare
       env: _build_name="zyxel-keenetic-omni1+2"
+    - <<: *prepare
+      env: _build_name="tplink-wr842n-v5"
 
     - <<: *tools
       env: _build_name="netgear-wnr2000+tplink-wr842nd"
@@ -87,6 +91,8 @@ jobs:
       env: _build_name="kvm64"
     - <<: *tools
       env: _build_name="zyxel-keenetic-omni1+2"
+    - <<: *tools
+      env: _build_name="tplink-wr842n-v5"
 
     - <<: *toolchain_prep
       env: _build_name="netgear-wnr2000+tplink-wr842nd"
@@ -94,6 +100,8 @@ jobs:
       env: _build_name="kvm64"
     - <<: *toolchain_prep
       env: _build_name="zyxel-keenetic-omni1+2"
+    - <<: *toolchain_prep
+      env: _build_name="tplink-wr842n-v5"
 
     - <<: *toolchain_final
       env: _build_name="netgear-wnr2000+tplink-wr842nd"
@@ -101,6 +109,8 @@ jobs:
       env: _build_name="kvm64"
     - <<: *toolchain_final
       env: _build_name="zyxel-keenetic-omni1+2"
+    - <<: *toolchain_final
+      env: _build_name="tplink-wr842n-v5"
 
     - <<: *packages
       env: _build_name="netgear-wnr2000+tplink-wr842nd"
@@ -108,6 +118,8 @@ jobs:
       env: _build_name="kvm64"
     - <<: *packages
       env: _build_name="zyxel-keenetic-omni1+2"
+    - <<: *packages
+      env: _build_name="tplink-wr842n-v5"
 
     - <<: *firmware
       env: _build_name="netgear-wnr2000+tplink-wr842nd"
@@ -115,3 +127,5 @@ jobs:
       env: _build_name="kvm64"
     - <<: *firmware
       env: _build_name="zyxel-keenetic-omni1+2"
+    - <<: *firmware
+      env: _build_name="tplink-wr842n-v5"
