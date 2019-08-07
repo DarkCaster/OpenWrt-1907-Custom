@@ -68,64 +68,50 @@ firmware: &firmware
 jobs:
   include:
     - <<: *cleanup
-      env: _build_name="netgear-wnr2000+tplink-wr842nd"
-    - <<: *cleanup
-      env: _build_name="kvm64"
-#    - <<: *cleanup
-#      env: _build_name="zyxel-keenetic-omni1+2"
+      env: _build_name="tplink-wr842nd-v2"
     - <<: *cleanup
       env: _build_name="tplink-wr842n-v5"
+    - <<: *cleanup
+      env: _build_name="kvm64"
 
     - <<: *prepare
-      env: _build_name="netgear-wnr2000+tplink-wr842nd"
-    - <<: *prepare
-      env: _build_name="kvm64"
-#    - <<: *prepare
-#      env: _build_name="zyxel-keenetic-omni1+2"
+      env: _build_name="tplink-wr842nd-v2"
     - <<: *prepare
       env: _build_name="tplink-wr842n-v5"
+    - <<: *prepare
+      env: _build_name="kvm64"
 
     - <<: *tools
-      env: _build_name="netgear-wnr2000+tplink-wr842nd"
-    - <<: *tools
-      env: _build_name="kvm64"
-#    - <<: *tools
-#      env: _build_name="zyxel-keenetic-omni1+2"
+      env: _build_name="tplink-wr842nd-v2"
     - <<: *tools
       env: _build_name="tplink-wr842n-v5"
+    - <<: *tools
+      env: _build_name="kvm64"
 
     - <<: *toolchain_prep
-      env: _build_name="netgear-wnr2000+tplink-wr842nd"
-    - <<: *toolchain_prep
-      env: _build_name="kvm64"
-#    - <<: *toolchain_prep
-#      env: _build_name="zyxel-keenetic-omni1+2"
+      env: _build_name="tplink-wr842nd-v2"
     - <<: *toolchain_prep
       env: _build_name="tplink-wr842n-v5"
+    - <<: *toolchain_prep
+      env: _build_name="kvm64"
 
     - <<: *toolchain_final
-      env: _build_name="netgear-wnr2000+tplink-wr842nd"
-    - <<: *toolchain_final
-      env: _build_name="kvm64"
-#    - <<: *toolchain_final
-#      env: _build_name="zyxel-keenetic-omni1+2"
+      env: _build_name="tplink-wr842nd-v2"
     - <<: *toolchain_final
       env: _build_name="tplink-wr842n-v5"
+    - <<: *toolchain_final
+      env: _build_name="kvm64"
 
     - <<: *packages
-      env: _build_name="netgear-wnr2000+tplink-wr842nd"
-    - <<: *packages
-      env: _build_name="kvm64"
-#    - <<: *packages
-#      env: _build_name="zyxel-keenetic-omni1+2"
+      env: _build_name="tplink-wr842nd-v2"
     - <<: *packages
       env: _build_name="tplink-wr842n-v5"
+    - <<: *packages
+      env: _build_name="kvm64"
 
     - <<: *firmware
-      env: _build_name="netgear-wnr2000+tplink-wr842nd"
-    - <<: *firmware
-      env: _build_name="kvm64"
-#    - <<: *firmware
-#      env: _build_name="zyxel-keenetic-omni1+2"
+      env: _build_name="tplink-wr842nd-v2"
     - <<: *firmware
       env: _build_name="tplink-wr842n-v5"
+    - <<: *firmware
+      env: _build_name="kvm64"
