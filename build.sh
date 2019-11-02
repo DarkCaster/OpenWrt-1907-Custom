@@ -79,7 +79,7 @@ configs_dir="$script_dir/external/configs"
 config_file="$configs_dir/$openwrt_version/$build_name.diffconfig"
 
 cache_dir="$HOME/.cache/openwrt_build"
-if [[ ! -z OPENWRT_BUILD_CACHE_DIR ]]; then
+if [[ ! -z $OPENWRT_BUILD_CACHE_DIR ]]; then
   cache_dir="$OPENWRT_BUILD_CACHE_DIR"
 fi
 
@@ -112,8 +112,12 @@ clean_env() {
 
 clean_cache() {
   echo "cleaning up cache"
-  rm -rfv "$cache_dir"/*
-  touch "$cache_dir/clear"
+  if [[ ! -z $cache_dir && -d $cache_dir ]]; then
+    rm -rfv "$cache_dir"/*
+    touch "$cache_dir/clear"
+  else
+    echo "cache dir is not set, skipping"
+  fi
 }
 
 full_init() {
