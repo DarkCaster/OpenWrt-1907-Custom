@@ -109,14 +109,14 @@ TARGET_DEVICES += ubnt_rocket-m
 define Device/ubnt_nanostation-m
   $(Device/ubnt-xm)
   DEVICE_TITLE := Ubiquiti Nanostation M
-  SUPPORTED_DEVICES += nano-m
+  SUPPORTED_DEVICES += nanostation-m
 endef
 TARGET_DEVICES += ubnt_nanostation-m
 
 define Device/ubnt_nanostation-m-xw
   $(Device/ubnt-xw)
   DEVICE_TITLE := Ubiquiti Nanostation M (XW)
-  SUPPORTED_DEVICES += nano-m-xw
+  SUPPORTED_DEVICES += nanostation-m-xw
 endef
 TARGET_DEVICES += ubnt_nanostation-m-xw
 
@@ -173,9 +173,16 @@ endef
 define Device/ubnt_unifiac-lite
   $(Device/ubnt_unifiac)
   DEVICE_TITLE := Ubiquiti UniFi AC-Lite
-  SUPPORTED_DEVICES += ubnt-unifiac-lite
+  SUPPORTED_DEVICES += unifiac-lite
 endef
 TARGET_DEVICES += ubnt_unifiac-lite
+
+define Device/ubnt_unifiac-lr
+  $(Device/ubnt_unifiac)
+  DEVICE_TITLE := Ubiquiti UniFi AC-LR
+  SUPPORTED_DEVICES += unifiac-lite ubnt,unifiac-lite
+endef
+TARGET_DEVICES += ubnt_unifiac-lr
 
 define Device/ubnt_unifiac-mesh
   $(Device/ubnt_unifiac)
