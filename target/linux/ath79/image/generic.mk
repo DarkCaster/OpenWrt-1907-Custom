@@ -1,5 +1,6 @@
 include ./common-buffalo.mk
 include ./common-netgear.mk
+include ./common-yuncore.mk
 
 DEVICE_VARS += ADDPATTERN_ID ADDPATTERN_VERSION
 DEVICE_VARS += SEAMA_SIGNATURE SEAMA_MTDBLOCK
@@ -102,6 +103,7 @@ define Device/avm_fritz300e
 	append-squashfs-fakeroot-be | pad-to 256 | \
 	append-rootfs | pad-rootfs | append-metadata | check-size $$$$(IMAGE_SIZE)
   DEVICE_PACKAGES := fritz-tffs rssileds -swconfig
+  SUPPORTED_DEVICES += fritz300e
 endef
 TARGET_DEVICES += avm_fritz300e
 
@@ -294,9 +296,8 @@ define Device/dlink_dir-859-a1
   ATH_SOC := qca9563
   DEVICE_TITLE := D-LINK DIR-859 A1
   IMAGE_SIZE := 15872k
-  DEVICE_PACKAGES :=  kmod-usb-core kmod-usb2 kmod-ath10k-ct ath10k-firmware-qca988x-ct
+  DEVICE_PACKAGES :=  kmod-usb-core kmod-usb2 kmod-ath10k-ct-smallbuffers ath10k-firmware-qca988x-ct
   SEAMA_SIGNATURE := wrgac37_dlink.2013gui_dir859
-  SUPPORTED_DEVICES += dir-859-a1
 endef
 TARGET_DEVICES += dlink_dir-859-a1
 
@@ -395,7 +396,7 @@ define Device/glinet_gl-ar300m-nor
   $(Device/glinet_gl-ar300m-common-nor)
   DEVICE_TITLE := GL.iNet GL-AR300M
 endef
-TARGET_DEVICES += glinet_gl-ar300m-nor
+#TARGET_DEVICES += glinet_gl-ar300m-nor
 
 define Device/glinet_gl-ar750s
   ATH_SOC := qca9563
@@ -404,7 +405,7 @@ define Device/glinet_gl-ar750s
   IMAGE_SIZE := 16000k
   SUPPORTED_DEVICES += gl-ar750s
 endef
-TARGET_DEVICES += glinet_gl-ar750s
+#TARGET_DEVICES += glinet_gl-ar750s
 
 define Device/glinet_gl-x750
   ATH_SOC := qca9531
@@ -518,7 +519,7 @@ define Device/nec_wg800hp
     append-rootfs | pad-rootfs | check-size $$$$(IMAGE_SIZE) | \
     xor-image -p 6A57190601121E4C004C1E1201061957 -x | \
     nec-fw LASER_ATERM
-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9887-ct-htt
+  DEVICE_PACKAGES := kmod-ath10k-ct-smallbuffers ath10k-firmware-qca9887-ct-htt
 endef
 TARGET_DEVICES += nec_wg800hp
 
@@ -632,7 +633,7 @@ define Device/netgear_wndr3700v2
   NETGEAR_BOARD_ID := WNDR3700v2
   NETGEAR_HW_ID := 29763654+16+64
   IMAGE_SIZE := 15872k
-  SUPPORTED_DEVICES += wndr3700v2
+  SUPPORTED_DEVICES += wndr3700
 endef
 TARGET_DEVICES += netgear_wndr3700v2
 
@@ -652,7 +653,7 @@ define Device/netgear_wndr3800
   NETGEAR_BOARD_ID := WNDR3800
   NETGEAR_HW_ID := 29763654+16+128
   IMAGE_SIZE := 15872k
-  SUPPORTED_DEVICES += wndr3800
+  SUPPORTED_DEVICES += wndr3700
 endef
 TARGET_DEVICES += netgear_wndr3800
 
@@ -661,7 +662,7 @@ define Device/phicomm_k2t
   DEVICE_TITLE := Phicomm K2T
   IMAGE_SIZE := 15744k
   IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | append-metadata | check-size $$$$(IMAGE_SIZE)
-  DEVICE_PACKAGES := kmod-leds-reset kmod-ath10k-ct ath10k-firmware-qca9888-ct
+  DEVICE_PACKAGES := kmod-leds-reset kmod-ath10k-ct-smallbuffers ath10k-firmware-qca9888-ct
 endef
 TARGET_DEVICES += phicomm_k2t
 
@@ -717,8 +718,30 @@ define Device/yuncore_a770
   DEVICE_TITLE := YunCore A770
   DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9887-ct
   IMAGE_SIZE := 16000k
+  IMAGES += tftp.bin
+  IMAGE/tftp.bin := $$(IMAGE/sysupgrade.bin) | yuncore-tftp-header-16m
 endef
 TARGET_DEVICES += yuncore_a770
+
+define Device/yuncore_a782
+  ATH_SOC := qca9563
+  DEVICE_TITLE := YunCore A782
+  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9888-ct
+  IMAGE_SIZE := 16000k
+  IMAGES += tftp.bin
+  IMAGE/tftp.bin := $$(IMAGE/sysupgrade.bin) | yuncore-tftp-header-16m
+endef
+TARGET_DEVICES += yuncore_a782
+
+define Device/yuncore_xd4200
+  ATH_SOC := qca9563
+  DEVICE_TITLE := YunCore XD4200
+  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9888-ct
+  IMAGE_SIZE := 16000k
+  IMAGES += tftp.bin
+  IMAGE/tftp.bin := $$(IMAGE/sysupgrade.bin) | yuncore-tftp-header-16m
+endef
+TARGET_DEVICES += yuncore_xd4200
 
 define Device/zbtlink_zbt-wd323
   ATH_SOC := ar9344

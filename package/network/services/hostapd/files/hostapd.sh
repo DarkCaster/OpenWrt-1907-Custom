@@ -223,6 +223,8 @@ hostapd_common_add_bss_config() {
 	config_add_int time_advertisement
 	config_add_string time_zone
 
+	config_add_boolean ieee80211k rrm_neighbor_report rrm_beacon_report
+
 	config_add_boolean ieee80211r pmk_r1_push ft_psk_generate_local ft_over_ds
 	config_add_int r0_key_lifetime reassociation_deadline
 	config_add_string mobility_domain r1_key_holder
@@ -489,6 +491,17 @@ hostapd_set_bss_options() {
 		append bss_conf "bss_transition=$bss_transition" "$N"
 	fi
 
+	json_get_vars ieee80211k
+	set_default ieee80211k 0
+	if [ "$ieee80211k" -eq "1" ]; then
+		json_get_vars rrm_neighbor_report rrm_beacon_report
+
+		set_default rrm_neighbor_report 1
+		set_default rrm_beacon_report 1
+		append bss_conf "rrm_neighbor_report=$rrm_neighbor_report" "$N"
+		append bss_conf "rrm_beacon_report=$rrm_beacon_report" "$N"
+	fi
+
 	if [ "$wpa" -ge "1" ]; then
 		json_get_vars ieee80211r
 		set_default ieee80211r 0
@@ -540,7 +553,14 @@ hostapd_set_bss_options() {
 			append bss_conf "rsn_preauth=1" "$N"
 			append bss_conf "rsn_preauth_interfaces=$network_bridge" "$N"
 		else
-			set_default auth_cache 0
+			case "$auth_type" in
+			sae|psk-sae|owe)
+				set_default auth_cache 1
+			;;
+			*)
+				set_default auth_cache 0
+			;;
+			esac
 		fi
 
 		append bss_conf "okc=$auth_cache" "$N"
@@ -684,12 +704,9 @@ wpa_supplicant_prepare_interface() {
 	local ap_scan=
 
 	_w_mode="$mode"
-	_w_modestr=
 
 	[[ "$mode" = adhoc ]] && {
 		ap_scan="ap_scan=2"
-
-		_w_modestr="mode=1"
 	}
 
 	local country_str=
@@ -747,6 +764,15 @@ wpa_supplicant_add_network() {
 		ieee80211w ieee80211r \
 		multi_ap
 
+	case "$auth_type" in
+		sae|owe|eap192|eap-eap192)
+			set_default ieee80211w 2
+		;;
+		psk-sae)
+			set_default ieee80211w 1
+		;;
+	esac
+
 	set_default ieee80211r 0
 	set_default multi_ap 0
 
@@ -761,6 +787,7 @@ wpa_supplicant_add_network() {
 	[[ "$_w_mode" = "adhoc" ]] && {
 		append network_data "mode=1" "$N$T"
 		[ -n "$freq" ] && wpa_supplicant_set_fixed_freq "$freq" "$htmode"
+		[ "$noscan" = "1" ] && append network_data "noscan=1" "$N$T"
 
 		scan_ssid="scan_ssid=0"
 
@@ -780,14 +807,13 @@ wpa_supplicant_add_network() {
 		scan_ssid=""
 	}
 
-	[ "$_w_mode" = "adhoc" -o "$_w_mode" = "mesh" ] && append network_data "$_w_modestr" "$N$T"
-
 	[ "$multi_ap" = 1 -a "$_w_mode" = "sta" ] && append network_data "multi_ap_backhaul_sta=1" "$N$T"
 
 	case "$auth_type" in
 		none) ;;
 		owe)
 			hostapd_append_wpa_key_mgmt
+			key_mgmt="$wpa_key_mgmt"
 		;;
 		wep)
 			local wep_keyidx=0

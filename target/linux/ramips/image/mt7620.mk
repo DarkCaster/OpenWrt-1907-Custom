@@ -51,6 +51,14 @@ define Device/alfa-network_ac1200rm
 endef
 TARGET_DEVICES += alfa-network_ac1200rm
 
+define Device/alfa-network_r36m-e4g
+  DTS := R36M-E4G
+  IMAGE_SIZE := 16064k
+  DEVICE_TITLE := ALFA Network R36M-E4G
+  DEVICE_PACKAGES := kmod-i2c-ralink kmod-usb2 kmod-usb-ohci uboot-envtools uqmi
+endef
+TARGET_DEVICES += alfa-network_r36m-e4g
+
 define Device/alfa-network_tube-e4g
   DTS := TUBE-E4G
   IMAGE_SIZE := 16064k
@@ -86,7 +94,6 @@ define Device/ArcherC20i
   TPLINK_HWID := 0xc2000001
   TPLINK_HWREV := 58
   IMAGES += factory.bin
-  DEVICE_PACKAGES := kmod-mt76x0e
   DEVICE_TITLE := TP-Link ArcherC20i
   DEVICE_PACKAGES := kmod-mt76x0e kmod-usb2 kmod-usb-ohci
 endef

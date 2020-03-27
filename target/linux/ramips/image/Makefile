@@ -19,12 +19,12 @@ loadaddr-$(CONFIG_TARGET_ramips_mt7621) := 0x80001000
 
 KERNEL_LOADADDR := $(loadaddr-y)
 
-KERNEL_DTB = kernel-bin | patch-dtb | lzma
+KERNEL_DTB = kernel-bin | append-dtb | lzma
 define Device/Default
-  PROFILES = Default $$(DTS)
-  KERNEL_DEPENDS = $$(wildcard ../dts/$$(DTS).dts)
+  PROFILES = Default
   KERNEL := $(KERNEL_DTB) | uImage lzma
   DEVICE_DTS_DIR := ../dts
+  DEVICE_DTS = $$(DTS)
   IMAGES := sysupgrade.bin
   IMAGE_SIZE := $(ralink_default_fw_size_8M)
   SUPPORTED_DEVICES := $(subst _,$(comma),$(1))
@@ -48,13 +48,10 @@ define Device/seama
 endef
 
 define Build/jcg-header
-	$(STAGING_DIR_HOST)/bin/jcgimage -v $(1) $(if $(JCG_MAXSIZE), -m $(JCG_MAXSIZE),) -u $@ -o $@.new
+	$(STAGING_DIR_HOST)/bin/jcgimage -v $(1) \
+		$(if $(JCG_MAXSIZE), -m $$(($(subst k, * 1024,$(JCG_MAXSIZE)))),) \
+		-u $@ -o $@.new
 	mv $@.new $@
-endef
-
-define Build/patch-dtb
-	$(call Image/BuildDTB,../dts/$(DTS).dts,$@.dtb)
-	$(STAGING_DIR_HOST)/bin/patch-dtb $@ $@.dtb
 endef
 
 define Build/trx
