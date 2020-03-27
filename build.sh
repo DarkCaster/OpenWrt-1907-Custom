@@ -166,7 +166,7 @@ full_init() {
   echo "ensuring diffconfig is unchanged"
   if ! diff 1>/dev/null "test.diffconfig" "$config_file"; then
     echo "error: diffconfig is changed:"
-    diff -uprN "test.diffconfig" "$config_file" && false
+    diff -uprN "test.diffconfig" "$config_file"
   fi
   rm -v "test.diffconfig"
 
