@@ -164,7 +164,10 @@ full_init() {
   make defconfig
   ./scripts/diffconfig.sh > test.diffconfig
   echo "ensuring diffconfig is unchanged"
-  diff "test.diffconfig" "$config_file" 1>/dev/null
+  if ! diff 1>/dev/null "test.diffconfig" "$config_file"; then
+    echo "error: diffconfig is changed:"
+    diff "test.diffconfig" "$config_file" && false
+  fi
   rm -v "test.diffconfig"
 
   popd 1>/dev/null
