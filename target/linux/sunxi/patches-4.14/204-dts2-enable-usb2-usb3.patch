@@ -1,0 +1,33 @@
+diff -uprN linux-4.14.179.old/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts linux-4.14.179/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts
+--- linux-4.14.179.old/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts	2020-05-05 20:15:53.000000000 +0300
++++ linux-4.14.179/arch/arm/boot/dts/sun8i-h2-plus-orangepi-zero.dts	2020-05-11 01:14:49.417908868 +0300
+@@ -102,6 +102,14 @@
+ 	status = "okay";
+ };
+ 
++&ehci2 {
++	status = "okay";
++};
++
++&ehci3 {
++	status = "okay";
++};
++
+ &mmc0 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&mmc0_pins_a>;
+@@ -142,6 +150,14 @@
+ 	status = "okay";
+ };
+ 
++&ohci2 {
++	status = "okay";
++};
++
++&ohci3 {
++	status = "okay";
++};
++
+ &spi0 {
+ 	/* Disable SPI NOR by default: it optional on Orange Pi Zero boards */
+ 	status = "disabled";
