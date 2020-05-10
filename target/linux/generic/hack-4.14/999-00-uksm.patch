@@ -86,14 +86,6 @@ diff -uprN linux-4.14.118/fs/exec.c linux-4.14.118.new/fs/exec.c
  
  #include <linux/uaccess.h>
  #include <asm/mmu_context.h>
-@@ -1374,6 +1375,7 @@ void setup_new_exec(struct linux_binprm
- 	/* An exec changes our domain. We are no longer part of the thread
- 	   group */
- 	current->self_exec_id++;
-+
- 	flush_signal_handlers(current, 0);
- }
- EXPORT_SYMBOL(setup_new_exec);
 diff -uprN linux-4.14.118/fs/proc/meminfo.c linux-4.14.118.new/fs/proc/meminfo.c
 --- linux-4.14.118/fs/proc/meminfo.c	2019-05-10 18:53:15.000000000 +0300
 +++ linux-4.14.118.new/fs/proc/meminfo.c	2019-05-18 04:34:38.509640267 +0300
@@ -506,8 +498,8 @@ diff -uprN linux-4.14.118/kernel/fork.c linux-4.14.118.new/kernel/fork.c
 diff -uprN linux-4.14.118/lib/Makefile linux-4.14.118.new/lib/Makefile
 --- linux-4.14.118/lib/Makefile	2019-05-10 18:53:15.000000000 +0300
 +++ linux-4.14.118.new/lib/Makefile	2019-05-18 04:34:38.597639789 +0300
-@@ -18,7 +18,7 @@ KCOV_INSTRUMENT_debugobjects.o := n
- KCOV_INSTRUMENT_dynamic_debug.o := n
+@@ -39,7 +39,7 @@ CFLAGS_string.o := $(call cc-option, -fno-stack-protector)
+ endif
  
  lib-y := ctype.o string.o vsprintf.o cmdline.o \
 -	 rbtree.o radix-tree.o dump_stack.o timerqueue.o\
