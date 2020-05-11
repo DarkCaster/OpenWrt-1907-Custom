@@ -11,13 +11,6 @@ PKG_BUILD_PARALLEL:=1
 include $(INCLUDE_DIR)/kernel.mk
 include $(INCLUDE_DIR)/package.mk
 
-define Download/xr819
-  FILE:=xr819.tar.bz2
-  URL:=https://github.com/melsem/openwrt-lede_xradio-xr819_soc-audio/raw/master/firmware/
-  HASH:=add13a7045cb2dbf170d51e2be678e0af8e2c7bf29cfd0f33a3a216fc88696dc
-endef
-$(eval $(call Download,xr819))
-
 define KernelPackage/xradio
   SUBMENU:=Wireless Drivers Test-xr819
   TITLE:=Xradio xr819 test wifi-drivers support
@@ -46,7 +39,7 @@ endef
 
 define KernelPackage/xradio/install
 	$(INSTALL_DIR) $(1)/lib/firmware/xr819
-	$(TAR) -C $(1)/lib/firmware -xjf $(DL_DIR)/xr819.tar.bz2
+	$(TAR) -C $(1)/lib/firmware -xjf ./files/xr819.tar.bz2
 endef
 
 $(eval $(call KernelPackage,xradio))
