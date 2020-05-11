@@ -8,6 +8,10 @@ PKG_LICENSE_FILES:=
 
 PKG_BUILD_PARALLEL:=1
 
+PKG_SOURCE_PROTO:=git
+PKG_SOURCE_URL:=https://github.com/fifteenhex/xradio.git
+PKG_SOURCE_VERSION=6bf0e2e21c80456e2a3d4ad1267caecde7165871
+
 include $(INCLUDE_DIR)/kernel.mk
 include $(INCLUDE_DIR)/package.mk
 
