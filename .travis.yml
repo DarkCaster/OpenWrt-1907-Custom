@@ -77,6 +77,8 @@ jobs:
       env: _build_name="netgear-wnr2000+tplink-wr842nd-v1"
     - <<: *cleanup
       env: _build_name="zyxel-keenetic-omni1+2"
+    - <<: *cleanup
+      env: _build_name="xunlong-orangepi-zero"
 
     - <<: *prepare
       env: _build_name="tplink-wr842nd-v2"
@@ -88,6 +90,8 @@ jobs:
       env: _build_name="netgear-wnr2000+tplink-wr842nd-v1"
     - <<: *prepare
       env: _build_name="zyxel-keenetic-omni1+2"
+    - <<: *prepare
+      env: _build_name="xunlong-orangepi-zero"
 
     - <<: *tools
       env: _build_name="tplink-wr842nd-v2"
@@ -99,6 +103,8 @@ jobs:
       env: _build_name="netgear-wnr2000+tplink-wr842nd-v1"
     - <<: *tools
       env: _build_name="zyxel-keenetic-omni1+2"
+    - <<: *tools
+      env: _build_name="xunlong-orangepi-zero"
 
     - <<: *toolchain_prep
       env: _build_name="tplink-wr842nd-v2"
@@ -110,6 +116,8 @@ jobs:
       env: _build_name="netgear-wnr2000+tplink-wr842nd-v1"
     - <<: *toolchain_prep
       env: _build_name="zyxel-keenetic-omni1+2"
+    - <<: *toolchain_prep
+      env: _build_name="xunlong-orangepi-zero"
 
     - <<: *toolchain_final
       env: _build_name="tplink-wr842nd-v2"
@@ -121,6 +129,8 @@ jobs:
       env: _build_name="netgear-wnr2000+tplink-wr842nd-v1"
     - <<: *toolchain_final
       env: _build_name="zyxel-keenetic-omni1+2"
+    - <<: *toolchain_final
+      env: _build_name="xunlong-orangepi-zero"
 
     - <<: *packages
       env: _build_name="tplink-wr842nd-v2"
@@ -132,6 +142,8 @@ jobs:
       env: _build_name="netgear-wnr2000+tplink-wr842nd-v1"
     - <<: *packages
       env: _build_name="zyxel-keenetic-omni1+2"
+    - <<: *packages
+      env: _build_name="xunlong-orangepi-zero"
 
     - <<: *firmware
       env: _build_name="tplink-wr842nd-v2"
@@ -143,3 +155,5 @@ jobs:
       env: _build_name="netgear-wnr2000+tplink-wr842nd-v1"
     - <<: *firmware
       env: _build_name="zyxel-keenetic-omni1+2"
+    - <<: *firmware
+      env: _build_name="xunlong-orangepi-zero"
