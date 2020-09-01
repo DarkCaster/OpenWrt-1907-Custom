@@ -217,7 +217,7 @@ restore_pack() {
   popd 1>/dev/null
   echo "extracting pack: $cache_stage/$pack_z"
   pushd "$src_parent" 1>/dev/null
-  zstd -d -T$jobs_countX2 "$cache_stage/$pack_z" | tar xf -
+  zstd -d -T$jobs_countX2 "$cache_stage/$pack_z" -c | tar xf -
   #pigz -c -d "$cache_stage/$pack_z" | tar xf -
   #lrzip -q -d "$cache_stage/$pack_z" -o - | tar xf -
   #tar xf "$cache_stage/$pack_z"
