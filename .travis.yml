@@ -31,7 +31,7 @@ prepare: &prepare
   script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" prepare "$TRAVIS_BUILD_ID" "$TRAVIS_EVENT_TYPE"
 
 toolchain_final: &toolchain
-  stage: "toolchain final"
+  stage: "toolchain"
   script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" toolchain "$TRAVIS_BUILD_ID" "$TRAVIS_EVENT_TYPE"
 
 packages: &packages
