@@ -30,17 +30,9 @@ prepare: &prepare
     depth: false
   script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" prepare "$TRAVIS_BUILD_ID" "$TRAVIS_EVENT_TYPE"
 
-tools: &tools
-  stage: "tools"
-  script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" tools "$TRAVIS_BUILD_ID" "$TRAVIS_EVENT_TYPE"
-
-toolchain_prep: &toolchain_prep
-  stage: "toolchain prepare"
-  script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" toolchain_prep "$TRAVIS_BUILD_ID" "$TRAVIS_EVENT_TYPE"
-
-toolchain_final: &toolchain_final
+toolchain_final: &toolchain
   stage: "toolchain final"
-  script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" toolchain_final "$TRAVIS_BUILD_ID" "$TRAVIS_EVENT_TYPE"
+  script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" toolchain "$TRAVIS_BUILD_ID" "$TRAVIS_EVENT_TYPE"
 
 packages: &packages
   stage: "packages"
@@ -93,43 +85,17 @@ jobs:
     - <<: *prepare
       env: _build_name="xunlong-orangepi-zero"
 
-    - <<: *tools
+    - <<: *toolchain
       env: _build_name="tplink-wr842nd-v2"
-    - <<: *tools
+    - <<: *toolchain
       env: _build_name="tplink-wr842n-v5"
-    - <<: *tools
+    - <<: *toolchain
       env: _build_name="kvm64"
-    - <<: *tools
+    - <<: *toolchain
       env: _build_name="netgear-wnr2000+tplink-wr842nd-v1"
-    - <<: *tools
+    - <<: *toolchain
       env: _build_name="zyxel-keenetic-omni1+2"
-    - <<: *tools
-      env: _build_name="xunlong-orangepi-zero"
-
-    - <<: *toolchain_prep
-      env: _build_name="tplink-wr842nd-v2"
-    - <<: *toolchain_prep
-      env: _build_name="tplink-wr842n-v5"
-    - <<: *toolchain_prep
-      env: _build_name="kvm64"
-    - <<: *toolchain_prep
-      env: _build_name="netgear-wnr2000+tplink-wr842nd-v1"
-    - <<: *toolchain_prep
-      env: _build_name="zyxel-keenetic-omni1+2"
-    - <<: *toolchain_prep
-      env: _build_name="xunlong-orangepi-zero"
-
-    - <<: *toolchain_final
-      env: _build_name="tplink-wr842nd-v2"
-    - <<: *toolchain_final
-      env: _build_name="tplink-wr842n-v5"
-    - <<: *toolchain_final
-      env: _build_name="kvm64"
-    - <<: *toolchain_final
-      env: _build_name="netgear-wnr2000+tplink-wr842nd-v1"
-    - <<: *toolchain_final
-      env: _build_name="zyxel-keenetic-omni1+2"
-    - <<: *toolchain_final
+    - <<: *toolchain
       env: _build_name="xunlong-orangepi-zero"
 
     - <<: *packages

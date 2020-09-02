@@ -183,7 +183,7 @@ create_pack() {
   rm -f "$cache_stage/$pack_z"
   echo "creating archive"
   pushd "$src_parent" 1>/dev/null
-  tar cf - --exclude="$src_name/build.sh" --exclude="$src_name/.travis.yml" "$src_name" | zstd -10 -T$jobs_count_compr - -o "$cache_stage/$pack_z"
+  tar cf - --exclude="$src_name/build.sh" --exclude="$src_name/.travis.yml" "$src_name" | zstd -7 -T$jobs_count_compr - -o "$cache_stage/$pack_z"
   #tar cf - --exclude="$src_name/build.sh" --exclude="$src_name/.travis.yml" "$src_name" | pigz -3 - > "$cache_stage/$pack_z"
   #tar cf - --exclude="$src_name/.git" --exclude="$src_name/build.sh" --exclude="$src_name/.travis.yml" "$src_name" | lrzip -g -w 10 -L 1 -q - > "$cache_stage/$pack_z"
   #tar cf "$cache_stage/$pack_z" --exclude="$src_name/.git" --exclude="$src_name/build.sh" --exclude="$src_name/.travis.yml" "$src_name"
@@ -235,28 +235,17 @@ elif [[ $operation = "prepare" ]]; then
   run_ping
   full_init
   make download -j$jobs_count
-  create_pack
-elif [[ $operation = "tools" ]]; then
-  run_ping
-  restore_pack "prepare"
-  clean_env
   make tools/install -j$jobs_count
   create_pack
-elif [[ $operation = "toolchain_prep" ]]; then
+elif [[ $operation = "toolchain" ]]; then
   run_ping
-  restore_pack "tools"
-  clean_env
-  make toolchain/gcc/initial/compile -j$jobs_count
-  create_pack
-elif [[ $operation = "toolchain_final" ]]; then
-  run_ping
-  restore_pack "toolchain_prep"
+  restore_pack "prepare"
   clean_env
   make toolchain/compile -j$jobs_count
   create_pack
 elif [[ $operation = "packages" ]]; then
   run_ping
-  restore_pack "toolchain_final"
+  restore_pack "toolchain"
   clean_env
   make target/compile -j$jobs_count
   make diffconfig
