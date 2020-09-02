@@ -51,8 +51,8 @@ fi
 jobs_count=`nproc 2>/dev/null`
 [[ -z $jobs_count ]] && jobs_count="1"
 
-(( jobs_countX2 = jobs_count * 2 ))
-(( jobs_count += 2 ))
+### (( jobs_countX2 = jobs_count * 2 ))
+### (( jobs_count += 2 ))
 
 echo "build config:"
 echo "scripts_repo: $scripts_repo"
@@ -183,7 +183,7 @@ create_pack() {
   rm -f "$cache_stage/$pack_z"
   echo "creating archive"
   pushd "$src_parent" 1>/dev/null
-  tar cf - --exclude="$src_name/build.sh" --exclude="$src_name/.travis.yml" "$src_name" | zstd -5 -T$jobs_countX2 - -o "$cache_stage/$pack_z"
+  tar cf - --exclude="$src_name/build.sh" --exclude="$src_name/.travis.yml" "$src_name" | zstd -2 -T$jobs_count - -o "$cache_stage/$pack_z"
   #tar cf - --exclude="$src_name/build.sh" --exclude="$src_name/.travis.yml" "$src_name" | pigz -3 - > "$cache_stage/$pack_z"
   #tar cf - --exclude="$src_name/.git" --exclude="$src_name/build.sh" --exclude="$src_name/.travis.yml" "$src_name" | lrzip -g -w 10 -L 1 -q - > "$cache_stage/$pack_z"
   #tar cf "$cache_stage/$pack_z" --exclude="$src_name/.git" --exclude="$src_name/build.sh" --exclude="$src_name/.travis.yml" "$src_name"
@@ -217,7 +217,7 @@ restore_pack() {
   popd 1>/dev/null
   echo "extracting pack: $cache_stage/$pack_z"
   pushd "$src_parent" 1>/dev/null
-  zstd -d -T$jobs_countX2 "$cache_stage/$pack_z" -c | tar xf -
+  zstd -d -T$jobs_count "$cache_stage/$pack_z" -c | tar xf -
   #pigz -c -d "$cache_stage/$pack_z" | tar xf -
   #lrzip -q -d "$cache_stage/$pack_z" -o - | tar xf -
   #tar xf "$cache_stage/$pack_z"
