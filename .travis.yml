@@ -34,6 +34,10 @@ toolchain_final: &toolchain
   stage: "toolchain"
   script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" toolchain "$TRAVIS_BUILD_ID" "$TRAVIS_EVENT_TYPE"
 
+packages: &base
+  stage: "base"
+  script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" base "$TRAVIS_BUILD_ID" "$TRAVIS_EVENT_TYPE"
+
 packages: &packages
   stage: "packages"
   script: ./build.sh "$_scripts_repo" "$_configs_repo" "$_openwrt_version" "$_build_name" packages "$TRAVIS_BUILD_ID" "$TRAVIS_EVENT_TYPE"
@@ -96,6 +100,19 @@ jobs:
     - <<: *toolchain
       env: _build_name="zyxel-keenetic-omni1+2"
     - <<: *toolchain
+      env: _build_name="xunlong-orangepi-zero"
+
+    - <<: *base
+      env: _build_name="tplink-wr842nd-v2"
+    - <<: *base
+      env: _build_name="tplink-wr842n-v5"
+    - <<: *base
+      env: _build_name="kvm64"
+    - <<: *base
+      env: _build_name="netgear-wnr2000+tplink-wr842nd-v1"
+    - <<: *base
+      env: _build_name="zyxel-keenetic-omni1+2"
+    - <<: *base
       env: _build_name="xunlong-orangepi-zero"
 
     - <<: *packages

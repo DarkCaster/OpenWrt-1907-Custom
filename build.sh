@@ -183,7 +183,7 @@ create_pack() {
   rm -f "$cache_stage/$pack_z"
   echo "creating archive"
   pushd "$src_parent" 1>/dev/null
-  tar cf - --exclude="$src_name/build.sh" --exclude="$src_name/.travis.yml" "$src_name" | zstd -7 -T$jobs_count_compr - -o "$cache_stage/$pack_z"
+  tar cf - --exclude="$src_name/build.sh" --exclude="$src_name/.travis.yml" "$src_name" | zstd -5 -T$jobs_count_compr - -o "$cache_stage/$pack_z"
   #tar cf - --exclude="$src_name/build.sh" --exclude="$src_name/.travis.yml" "$src_name" | pigz -3 - > "$cache_stage/$pack_z"
   #tar cf - --exclude="$src_name/.git" --exclude="$src_name/build.sh" --exclude="$src_name/.travis.yml" "$src_name" | lrzip -g -w 10 -L 1 -q - > "$cache_stage/$pack_z"
   #tar cf "$cache_stage/$pack_z" --exclude="$src_name/.git" --exclude="$src_name/build.sh" --exclude="$src_name/.travis.yml" "$src_name"
@@ -243,13 +243,19 @@ elif [[ $operation = "toolchain" ]]; then
   clean_env
   make toolchain/compile -j$jobs_count
   create_pack
-elif [[ $operation = "packages" ]]; then
+elif [[ $operation = "base" ]]; then
   run_ping
   restore_pack "toolchain"
   clean_env
   make target/compile -j$jobs_count
   make diffconfig
   make package/cleanup
+  make package/base-files/compile package/luci-base/compile -j$jobs_count
+  create_pack
+elif [[ $operation = "packages" ]]; then
+  run_ping
+  restore_pack "base"
+  clean_env
   make package/compile -j$jobs_count
   create_pack
 elif [[ $operation = "firmware" ]]; then
