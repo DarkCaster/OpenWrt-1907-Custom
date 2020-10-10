@@ -52,7 +52,7 @@ jobs_count=`nproc 2>/dev/null`
 [[ -z $jobs_count ]] && jobs_count="1"
 
 (( jobs_count_compr = jobs_count + 0 ))
-### (( jobs_count += 2 ))
+(( jobs_count += 1 ))
 
 echo "build config:"
 echo "scripts_repo: $scripts_repo"
