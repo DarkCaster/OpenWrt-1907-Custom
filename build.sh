@@ -52,7 +52,7 @@ jobs_count=`nproc 2>/dev/null`
 [[ -z $jobs_count ]] && jobs_count="1"
 
 (( jobs_count_compr = jobs_count + 0 ))
-(( jobs_count += 1 ))
+### (( jobs_count += 1 ))
 
 echo "build config:"
 echo "scripts_repo: $scripts_repo"
@@ -250,7 +250,8 @@ elif [[ $operation = "base" ]]; then
   make target/compile -j$jobs_count
   make diffconfig
   make package/cleanup
-  make package/base-files/compile package/luci-base/compile -j$jobs_count
+  #build some base packages included in most devices, build heavy packages like openssl and protobuf
+  make package/base-files/compile package/luci-base/compile package/openssl/compile package/protobuf/compile -j$jobs_count
   create_pack
 elif [[ $operation = "packages" ]]; then
   run_ping
